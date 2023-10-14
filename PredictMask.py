@@ -2,6 +2,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 import time
+from pathlib import Path
+
 import numpy as np
 import pandas as pd
 
@@ -80,6 +82,15 @@ def predict_mask(img_path):
     # Visualize the predicted mask
     plt.imshow(output, cmap='jet', vmin=0, vmax=1)  # Use an appropriate colormap, vmin, and vmax
     plt.colorbar()
-    plt.show()
+    
+    # Save the predicted mask as an image
+    output_image_path = 'path_to_save_output_mask.png'  # Specify the path and filename for the output image
 
-predict_mask("/Users/NexusMacBookProYeo/Desktop/Y4S1/BT4103 - Capstone/capstone cv/iu.jpeg")
+    # Convert the predicted mask to the range [0, 255] and change data type to uint8
+    output_image = (output * 255).astype(np.uint8)
+    # Save the image
+    cv2.imwrite(output_image_path, output_image)
+
+    print(f"Predicted mask saved as {output_image_path}")
+
+    
