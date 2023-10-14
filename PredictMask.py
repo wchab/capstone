@@ -2,8 +2,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 import time
-from pathlib import Path
-
 import numpy as np
 import pandas as pd
 
@@ -83,3 +81,5 @@ def predict_mask(img_path):
     plt.imshow(output, cmap='jet', vmin=0, vmax=1)  # Use an appropriate colormap, vmin, and vmax
     plt.colorbar()
     plt.show()
+
+predict_mask("/Users/NexusMacBookProYeo/Desktop/Y4S1/BT4103 - Capstone/capstone cv/iu.jpeg")
