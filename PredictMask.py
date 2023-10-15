@@ -15,14 +15,16 @@ import torch
 from torch import nn, optim
 import segmentation_models_pytorch as smp
 from segmentation_models_pytorch import utils
-from PIL import Image
 
 class PredictImage():
     def __init__(self):
+        self.image_filename = None
         print("Locating Lips...")
         pass
 
     def predict_mask(self, img_path):
+        if '/' in img_path:
+            self.image_filename = img_path.split("/")[-1]
         segmodel = torch.load('./best_model.pth')
         device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         BACKBONE = 'resnet34'
@@ -64,8 +66,6 @@ class PredictImage():
                 img = img.permute(2, 0, 1)
 
                 return img.float()
-        # Your single image file path
-    #     image_path = 'lol.jpeg'
 
         # Create a DataFrame with the single image path
         data = pd.DataFrame({'image_path': [img_path]})
@@ -84,14 +84,11 @@ class PredictImage():
     
         output_array = output[0, 0].detach().cpu().numpy() 
 
-        output_image_path = 'path_to_save_output_mask.png'  # Specify the path and filename for the output image
+        output_image_path = os.path.join("processed", f"processed_{self.image_filename}")
 
         # Convert the predicted mask to the range [0, 255] and change data type to uint8
-        output_image = (output * 255).astype(np.uint8)
+        output_image = (output_array * 255).astype(np.uint8)
         # Save the image
         cv2.imwrite(output_image_path, output_image)
-
-        # # Visualize the predicted mask
-        # plt.imshow(output, cmap='jet', vmin=0, vmax=1)  # Use an appropriate colormap, vmin, and vmax
-        # plt.colorbar()
-        # plt.show()
+        print(output_image_path)
+        return output_image_path

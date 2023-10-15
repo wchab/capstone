@@ -5,18 +5,21 @@ import time
 from PredictMask import PredictImage
 
 app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = 'uploads'  # Folder to store uploaded images
-app.config['ALLOWED_EXTENSIONS'] = {'png', 'jpg', 'jpeg', 'gif'}
+app.config['ALLOWED_EXTENSIONS'] = {'png', 'jpg', 'jpeg'}
 
 # Function to check if the file extension is allowed
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
 
 @app.route('/')
-def index():
-    return render_template('index.html')
+def home():
+    return render_template('home.html')
 
 @app.route('/upload', methods=['GET', 'POST'])
+def upload():
+    return render_template('upload.html')
+
+@app.route('/upload_file', methods=['GET', 'POST'])
 def upload_file():
     if 'file' not in request.files:
         return redirect(request.url)
@@ -27,15 +30,16 @@ def upload_file():
         return redirect(request.url)
 
     if file and allowed_file(file.filename):
-        filename = os.path.join(file.filename)
-        file.save(filename)
-        PredictImage().predict_mask(file.filename)
+        uploads_filename = os.path.join("uploads", file.filename)
+        file.save(uploads_filename)
+        processed_filename = PredictImage().predict_mask(uploads_filename)
         # Read the image and convert it to base64 for passing to the HTML template
         
-        with open(filename, "rb") as image_file:
-            image_data = base64.b64encode(image_file.read()).decode("utf-8")
-            
-        return render_template('index.html', image_data=image_data)
+        with open(uploads_filename, "rb") as raw_image_file:
+            raw = base64.b64encode(raw_image_file.read()).decode("utf-8")
+        with open(processed_filename, "rb") as processed_image_file:
+            processed = base64.b64encode(processed_image_file.read()).decode("utf-8")
+        return render_template('upload.html', image_data1=raw, image_data2=processed)
     else:
         return "Invalid file format. Allowed file formats are: png, jpg, jpeg, gif"
 

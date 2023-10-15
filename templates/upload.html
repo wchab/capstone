@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Image Upload</title>
+</head>
+<body>
+    <div class="top-banner">
+        <img class=logo src="https://logos-world.net/wp-content/uploads/2020/04/LOreal-Logo.png">
+    </div>
+    <div class="drop">
+        <label for="input-file" id="drop-area">
+            <input type="file" accept="image/*" id="input-file"> 
+            <div id="img-view">
+                <img src="icon.png">
+                <p> Drag and drop or click here<br> to upload image</p>
+                <span>Upload any images from desktop</span>
+            </div>
+        </label>
+    </div>
+    <div>
+        {% if image_data1 %}
+            <h2>Uploaded Image:</h2>
+            <img src="data:image/jpg;base64,{{ image_data1 }}" alt="Uploaded Image">
+        {% endif %}
+    </div>
+        
+    <div class="bottom-banner">
+        <p>Bottom Banner Content Goes Here</p>
+    </div>
+</body>
+</html>
+
+<script> 
+    const dropArea = document.getElementById("drop-area");
+    const inputFile = document.getElementById("input-file");
+    const imageView = document.getElementById("img-view");
+
+    inputFile.addEventListener("change", uploadImage);
+
+    function uploadImage() {
+        let imgLink = URL.createObjectURL(inputFile.files[0]);
+        imageView.style.backgroundImage = `url(${imgLink})`;
+        imageView.textContent = "";
+        imageView.style.border = 0;
+    }
+
+</script>
+
+<style>
+    * {
+        margin: 0px;
+        padding: 0px;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif
+    }
+    .drop {
+        width: 100%;
+        min-height: 100vh;
+        background: linear-gradient(#e7baff, #c2b6d9);
+        display:flex
+    }
+    #drop-area {
+        width: 500px;
+        height: 300px;
+        padding: 30px;
+        background: #fff;
+        text-align: center;
+        border-radius: 20px;
+    }
+    #img-view span {
+        display:block;
+        font-size: 12px;
+        color: #777;
+        margin-top: 15px;
+        background-size: cover;
+    }
+    .top-banner {
+        top: 0;
+        left: 0;
+        width: 100%;
+        background-color: darkslategray;
+        padding: 10px 0;
+        text-align: center;
+        position: relative;
+    }
+    .bottom-banner {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background-color: darkslategray;
+        color: white;
+        padding: 10px;
+        text-align: center;
+    }
+    .logo {
+        width: 80px;
+        height: 50px;
+        border-radius: 3px;
+        transition: .5s;
+    }
+    .header {
+        justify-content: center;
+        margin: 50px;
+        width: 33%;
+        text-align:center;
+        background-color: darkslategray;
+        border-radius: 5px;
+        color: #FFFDD0;
+    }
+</style>
