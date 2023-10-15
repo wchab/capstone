@@ -19,7 +19,6 @@ def home():
 def upload():
     return render_template('upload.html')
 
-@app.route('/upload_file', methods=['GET', 'POST'])
 def upload_file():
     if 'file' not in request.files:
         return redirect(request.url)

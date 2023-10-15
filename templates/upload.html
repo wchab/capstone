@@ -9,7 +9,11 @@
     </div>
     <div class="drop">
         <label for="input-file" id="drop-area">
-            <input type="file" accept="image/*" id="input-file"> 
+            <form method="POST" action="/upload_file" enctype="multipart/form-data">
+                <input type="file" accept="image/*" id="input-file"> 
+                <input type="submit" value="Upload">
+            </form>
+            
             <div id="img-view">
                 <img class=icon src="https://icon-library.com/images/drag-and-drop-icon/drag-and-drop-icon-8.jpg">
                 <p> Drag and drop or click here to upload image</p>
