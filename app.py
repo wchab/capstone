@@ -116,7 +116,7 @@ def match_product():
 
             return render_template('shadematched.html', product_name=product_name, product_colour=product_colour, product_id=product_id, product_image_data=product_image_data)
         else:
-            return render_template('nomatch.html')  # Or handle the case where the image file is not found
+            return render_template('shadematched.html', product_name=product_name, product_colour=product_colour, product_id=product_id, product_image_data=None)  # Or handle the case where the image file is not found
 
     else:
         return render_template('nomatch.html')  # Or handle the case where product information is not found
