@@ -8,8 +8,9 @@ import shutil
 
 app = Flask(__name__, static_url_path='/static')
 app.config['ALLOWED_EXTENSIONS'] = {'png', 'jpg', 'jpeg'}
-PRODUCTS_FILE = 'lipshades.xlsx'
-IMAGE_FOLDER = 'product_pictures'
+PRODUCTS_FILE = './static/lipshades.xlsx'
+IMAGE_FOLDER = './static/images'
+app.config['STATIC_FOLDER'] = 'static/images'
 
 # Function to check if the file extension is allowed
 def allowed_file(filename):
@@ -21,7 +22,15 @@ def home():
 
 @app.route('/virtualtryon', methods=['GET', 'POST'])
 def virtualtryon():
-    return render_template('virtualtryon.html')
+    intense_volume_matte_dict = {}
+    reds_of_worth_dict = {}
+    for filename in os.listdir('./static/images/intense_volume_matte'):
+        if 'png' in filename:
+            intense_volume_matte_dict[filename] = filename.split('.')[0]
+    for filename in os.listdir('./static/images/reds_of_worth'):
+        if 'png' in filename:
+            reds_of_worth_dict[filename] = filename.split('.')[0]
+    return render_template('virtualtryon.html', intense_volume_matte_dict=intense_volume_matte_dict, reds_of_worth_dict=reds_of_worth_dict)
 
 @app.route('/upload', methods=['GET', 'POST'])
 def upload():
@@ -62,7 +71,6 @@ def shadematched():
 def get_product_info(product_hexcode):
     try:
         df = pd.read_excel(PRODUCTS_FILE)
-
         product_name = df[df['hexcode'] == product_hexcode]['name'].iloc[0]
         product_colour = df[df['hexcode'] == product_hexcode]['color'].iloc[0]
         product_id = df[df['hexcode'] == product_hexcode]['product_id'].iloc[0]

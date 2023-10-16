@@ -1,30 +1,138 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <meta charset="utf-8">
-        <title>L'Oreal Home</title>
-        <link rel="shortcut icon" href="#">
-        <meta name="viewport" content=""width=device-width, initial-scale="1.0">
+        <title>Lipstick Virtual Try-On</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
     </head>
     <body>
         <div class="top-banner">
             <img class=logo src="https://logos-world.net/wp-content/uploads/2020/04/LOreal-Logo.png">
         </div>
-        <div class="container">
-            <div class="carousell">
-                <img src= "static/images/A000001.jpg">
+        <div class="product_panel">
+            <div class="content">
+                <div class="header">
+                    <h1>Intense Matte Lipstick</h1> 
+                </div>
+                <div class="container">
+                    <script>src="intense_volume_matte.js"</script>
+                    <i class="fa-solid fa-angle-left" id="left"></i>
+                    <div class="carousel">
+                       {% for image in intense_volume_matte_dict.keys() %}
+                            <a href= "shadematched/{{ intense_volume_matte_dict[image] }}">
+                                <img class="products" src="{{ url_for('static', filename='images/' + image) }}" alt="{{ image }}">
+                            </a>
+                        {% endfor %}
+                    </div>
+                    <i class="fa-solid fa-angle-right"></i>
+                </div>
+               
             </div>
         </div>
+            
         <div class="bottom-banner">
         </div>
     </body>
 </html>
+
+
 
 <style>
     *{
         margin: 0px;
         padding: 0px;
         font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif
+    }
+    .header {
+        position: absolute;
+        top: 0;
+    }
+    .products {
+        background-color: black;
+    }
+    .product_panel {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 30%; 
+        height: 100%;
+        margin-right: 200px;
+    }
+    .content {
+        display: flex;
+        padding: 0 3px;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+    }
+
+    .container {
+        display:flex;
+        max-width: 800px;
+        position: relative;
+        padding: 10px;
+    }
+    .container i{
+        top: 50%;
+        height: 44px;
+        width: 44px;
+        color: grey;
+        cursor: pointer;
+        font-size: 1.15rem;
+        position: absolute;
+        text-align: center;
+        line-height: 44px;
+        background: #fff;
+        border-radius: 50%;
+        transform: translateY(-25%);
+        transition: transform 0.1s linear;
+    }
+    .container i:active{
+        transform: translateY(-50%) scale(0.9);
+    }
+    .container i:hover{
+        background: darkslategrey;
+    }
+    .container i:first-child{
+        left: -25px;
+        display: none;
+    }
+    .container i:last-child{
+        right: -25px;
+    }
+    .container .carousel{
+        font-size: 0px;
+        cursor: pointer;
+        overflow: hidden;
+        white-space: nowrap;
+        scroll-behavior: smooth;
+    }
+    .carousel.dragging{
+        cursor: grab;
+        scroll-behavior: auto;
+    }
+    .carousel.dragging img{
+        pointer-events: none;
+    }
+    .carousel img{
+        height: 150px;
+        object-fit: cover;
+        user-select: none;
+        margin-left: 20px;
+        width: 150px;
+        padding: 5px;
+    }
+    .carousel img:first-child{
+        margin-left: 0px;
+    }
+    @media screen and (max-width: 900px) {
+        .carousel img{
+            width: calc(100% / 2);
+        }
+    }
+    @media screen and (max-width: 550px) {
+        .carousel img{
+            width: 100%;
+        }
     }
     .top-banner {
         top: 0;
