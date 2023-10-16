@@ -6,8 +6,7 @@ from PredictMask import PredictImage
 import pandas as pd
 import shutil
 
-app = Flask(__name__)
-# app = Flask(__name__, static_url_path='/static')
+app = Flask(__name__, static_url_path='/static')
 app.config['ALLOWED_EXTENSIONS'] = {'png', 'jpg', 'jpeg'}
 PRODUCTS_FILE = 'lipshades.xlsx'
 IMAGE_FOLDER = 'product_pictures'
@@ -19,6 +18,10 @@ def allowed_file(filename):
 @app.route('/')
 def home():
     return render_template('home.html')
+
+@app.route('/virtualtryon', methods=['GET', 'POST'])
+def virtualtryon():
+    return render_template('virtualtryon.html')
 
 @app.route('/upload', methods=['GET', 'POST'])
 def upload():
