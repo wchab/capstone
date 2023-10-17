@@ -19,6 +19,8 @@ class ShadeRecommender():
         self.segmodel = torch.load('./best_model.pth')
         self.output = self.predict_mask()
         self.colour_rgb  = self.extract_avg_colour()
+        self.product_df = pd.read_excel('lips_loreal.xlsx')
+        self.product_dic = self.recommend_product()
         
     def predict_mask(self):
         '''
@@ -86,8 +88,8 @@ class ShadeRecommender():
         output = output[0, 0].detach().cpu().numpy()  # Extract the single channel and convert to a NumPy array
 
 #         # Visualize the predicted mask
-        plt.imshow(output, cmap='jet', vmin=0, vmax=1)  # Use an appropriate colormap, vmin, and vmax
-        plt.colorbar()
+#         plt.imshow(output, cmap='jet', vmin=0, vmax=1)  # Use an appropriate colormap, vmin, and vmax
+#         plt.colorbar()
 
     #     # Save the predicted mask as an image
     #     output_image_path = 'path_to_save_output_mask.png'  # Specify the path and filename for the output image
@@ -135,8 +137,31 @@ class ShadeRecommender():
         
         return avg_rgb
     
-#     def recommend_product(self):
+    def recommend_product(self):
+        target_color = self.colour_rgb
+        hex_lst = self.product_df['hex_colour'].to_list()
         
+        # Function to convert hex to RGB
+        def hex_to_rgb(hex_color):
+            hex_color = hex_color.lstrip("#")
+            return np.array([int(hex_color[i:i+2], 16) for i in (0, 2, 4)])
+
+        # Function to calculate Euclidean distance between two RGB colors
+        def color_distance(color1, color2):
+            return np.linalg.norm(color1 - color2)
+        
+        dist_lst = []
+        for i in range(len(hex_lst)):
+            rgb = hex_to_rgb(hex_lst[i])
+            dist = color_distance(target_color, rgb)
+            dist_lst.append(dist)
+#         return dist_lst
+        
+        product_idx = dist_lst.index(min(dist_lst))
+        product_row = self.product_df.loc[product_idx]
+        product_dic = product_row.to_dict()
+        return product_dic
+    
         
         
     
