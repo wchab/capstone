@@ -7,7 +7,6 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import cv2
 import torch
-import segmentation_models_pytorch as smp
 
 from torch import nn, optim
 from segmentation_models_pytorch import utils
@@ -68,8 +67,6 @@ class ShadeRecommender():
                 img = img.permute(2, 0, 1)
 
                 return img.float()
-        # Your single image file path
-    #     image_path = 'lol.jpeg'
 
         # Create a DataFrame with the single image path
         data = pd.DataFrame({'image_path': [self.img_path]})
@@ -87,22 +84,12 @@ class ShadeRecommender():
 
         # Assuming output is the tensor you provided
         output = output[0, 0].detach().cpu().numpy()  # Extract the single channel and convert to a NumPy array
+        
+        # Visualize the predicted mask
+        plt.imshow(output, cmap='jet', vmin=0, vmax=1)  # Use an appropriate colormap, vmin, and vmax
+        visualization_image_path = 'path_to_save_visualization.png'  # Specify the path and filename
+        plt.savefig(visualization_image_path)
 
-#         # Visualize the predicted mask
-#         plt.imshow(output, cmap='jet', vmin=0, vmax=1)  # Use an appropriate colormap, vmin, and vmax
-#         plt.colorbar()
-
-    #     # Save the predicted mask as an image
-    #     output_image_path = 'path_to_save_output_mask.png'  # Specify the path and filename for the output image
-
-    #     # Convert the predicted mask to the range [0, 255] and change data type to uint8
-    #     output_image = (output * 255).astype(np.uint8)
-    #     # Save the image
-    #     cv2.imwrite(output_image_path, output_image)
-
-    #     print(f"Predicted mask saved as {output_image_path}")
-    #     # Load the original image
-    #     original_image = cv2.imread(img_path)  # Replace with the path to your original image
 
         return output
     
@@ -134,14 +121,9 @@ class ShadeRecommender():
         # If you want to convert it to RGB (typical for visualization), you can do:
         avg_rgb = average_color[::-1]
         
-        #convert to hex
-        
         return avg_rgb
     
     def recommend_product(self):
-        '''
-        returns a dictionary of the most similar product and its details 
-        '''
         target_color = self.colour_rgb
         hex_lst = self.product_df['hex_colour'].to_list()
         
@@ -166,7 +148,32 @@ class ShadeRecommender():
         product_dic = product_row.to_dict()
         return product_dic
     
+    def save_predicted_mask(self):
+        '''
+        generates the predicted mask for front-end
+        '''
+        # Load the original image
+        original_image = cv2.imread(self.img_path)  # Replace with the path to your original image
         
-        
+        # Define a threshold value
+        threshold = 0.3
+
+        # Create a binary mask for values greater than the threshold
+        binary_mask = (self.output>threshold).astype(np.uint8)
+
+        # Resize the binary mask to match the dimensions of the original image
+        binary_mask_resized = cv2.resize(binary_mask, (original_image.shape[1], original_image.shape[0]))
+
+        # Create a copy of the original image
+        overlay_image = original_image.copy()
+
+        highlight_color = np.array([0, 240, 0])  # Green highlight in BGR format
+
+        alpha = 0.4
+        overlay_image[binary_mask_resized == 1] = (
+            overlay_image[binary_mask_resized == 1] * (1 - alpha)
+            + highlight_color * alpha
+        )
+        cv2.imwrite('path_to_overlay_image2.jpg', overlay_image)  # Replace with the desired output path
     
     
