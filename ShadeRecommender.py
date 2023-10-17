@@ -7,6 +7,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import cv2
 import torch
+import segmentation_models_pytorch as smp
 
 from torch import nn, optim
 from segmentation_models_pytorch import utils
