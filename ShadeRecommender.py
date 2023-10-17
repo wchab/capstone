@@ -138,6 +138,9 @@ class ShadeRecommender():
         return avg_rgb
     
     def recommend_product(self):
+        '''
+        returns a dictionary of the most similar product and its details 
+        '''
         target_color = self.colour_rgb
         hex_lst = self.product_df['hex_colour'].to_list()
         
