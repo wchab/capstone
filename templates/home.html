@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>L'Oreal Home</title>
+    </head>
+    <body>
+        <div class="top-banner">
+            <a href= "/home">
+                <img class=logo src="https://logos-world.net/wp-content/uploads/2020/04/LOreal-Logo.png">
+            </a>
+        </div>
+        <div class="header">
+            <img class="big-image" src="">
+        </div>
+        <div class="content">
+            <div class="container">
+                <div class="card">
+                    <a href="upload" >
+                        <img class=panel src="https://m.media-amazon.com/images/I/81RelD2qPbL._AC_UF894,1000_QL80_.jpg">
+                    </a>
+                    <div class="intro">
+                        <h1>Lip Shade Finder</h1>
+                        <p>Want to look like your favourite celebrity or model?</p>
+                        <p>Upload a photo to find a L'Oreal lipstick that matches that colour in the person</p>
+                    </div>
+                </div>
+            </div>
+            <div class="container">
+                <div class="card">
+                    <a href="virtualtryon/all" >
+                        <img class=panel src="https://images.hellomagazine.com/horizon/landscape/deaceade5b9a-dpcouturegroupbalmain-t.jpg?tx=c_fill%2Cw_1200">
+                    </a>
+                    <div class="intro">
+                        <h1>Lipstick Virtual Try-On</h1>
+                        <p>Try on our L'Oreal lipstick shades</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="bottom-banner">
+            <p>Bottom Banner Content Goes Here</p>
+        </div>
+    </body>
+</html>
+
+<style>
+    .header {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+        background-color: #EAEAEA;
+        outline-color: black;
+    }
+    .header img {
+        width: 50%;
+    }
+    *{
+        margin: 0px;
+        padding: 0px;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif
+    }
+
+    .panel {
+        width: 350px;
+        height: 350px;
+        border-radius: 3px;
+        transition: .5s;
+    }
+    .content {
+        display: flex;
+        justify-content: center;
+        height: 90vh;
+        background:#EAEAEA;
+        background-position:50%;
+        align-items:center;
+        background-image: url("https://www.loreal-paris.co.uk/-/media/project/loreal/brand-sites/oap/emea/uk/articles/virtual-beauty-tools/infaillible-24h-matte-cover.jpg");
+        background-repeat: no-repeat;
+    }
+    .container {
+        display: flex;
+    }
+    .card {
+        height: 450px;
+        margin: 80px;
+        box-shadow: 5px 5px 20px black;
+        background-color: darkslategray;
+        overflow: hidden;
+    }
+    .intro{
+        border-radius: 3px;
+        width:350px;
+        position: relative;
+        color: #FFFDD0;
+    }
+    h1{
+        margin: 25px;
+        padding:5px;
+        font-size:25px;
+        text-align:center
+    }
+    p{
+        font-size:15px;
+        visibility:hidden;
+        opacity: 0;
+        text-align: center;
+        margin: 5px;
+    }
+    span {
+        font-weight: bold;
+    }
+    .card:hover {
+        cursor:pointer;
+    }
+
+    .card:hover .intro {
+        height: 220px;
+        bottom:22%;
+        background: rgb(27, 27, 27, .5);
+    }
+
+    .card:hover p {
+        opacity: 1;
+        visibility: visible;
+    }
+    .card:hover img {
+        transform: scale(1.1) rotate(-5deg);
+    }
+    .top-banner {
+        top: 0;
+        left: 0;
+        width: 100%;
+        background-color: darkslategray;
+        padding: 10px 0;
+        text-align: center;
+        position: relative;
+    }
+    .bottom-banner {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background-color: darkslategray;
+        color: white;
+        padding: 10px;
+        text-align: center;
+    }
+    .logo {
+        width: 80px;
+        height: 50px;
+        border-radius: 3px;
+        transition: .5s;
+    }
+</style>
