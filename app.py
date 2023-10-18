@@ -8,8 +8,8 @@ import shutil
 
 app = Flask(__name__, static_url_path='/static')
 app.config['ALLOWED_EXTENSIONS'] = {'png', 'jpg', 'jpeg'}
-PRODUCTS_FILE = './static/lipshades.xlsx'
-IMAGE_FOLDER = './static/images'
+PRODUCTS_FILE = 'lipshades.xlsx'
+IMAGE_FOLDER = 'product_pictures'
 
 # Function to check if the file extension is allowed
 def allowed_file(filename):
