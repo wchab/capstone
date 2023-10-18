@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Lipstick Virtual Try-On</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    </head>
+    <body>
+        <div class="top-banner">
+            <a href= "/home">
+                <img class=logo src="https://logos-world.net/wp-content/uploads/2020/04/LOreal-Logo.png">
+            </a>
+        </div>
+        <div class="page">
+            <div class="content">
+                <div class="drop">
+                <label for="input-file" id="drop-area">
+                    <form method="POST" action="/upload_file" enctype="multipart/form-data">
+                        <input type="file" accept="image/*" id="file", name="file"> 
+                        <input type="submit" value=" Upload ">
+                    </form>
+
+                    <div id="img-view">
+                        <img class=icon src="https://icon-library.com/images/drag-and-drop-icon/drag-and-drop-icon-8.jpg">
+                        <p> Drag and drop or click here to upload image</p>
+                        <span>Upload any images from desktop</span>
+                    </div>
+                </label>
+            </div>     
+        <!-- <form method="POST" action="/virtualtryon" id="operator">
+            <select name="selected_option" id="selected_option">
+                <option disabled selected value> -- Select an Option -- </option>
+                <option value="all">All Lipstick Product Lines</option>
+                <option value="intense_volume_matte">Intense Volume Matte</option>
+                <option value="reds_of_worth">Reds of Worth</option>
+            </select>
+        </form> -->
+    
+            <div class="product_panel">
+                <div class="content">
+                    <div class="header">
+                    </div>
+                    <div class="container">
+                        <i class="fa-solid fa-angle-left" id="left"></i>
+                        <div class="carousel" id="carousel">
+                        {% for image in image_dict.keys() %}
+                        <div class="panel" id="panel">
+                                <img class="products" src="{{ url_for('static', filename='images/' + image) }}" alt="{{ image_dict[image] }}">
+                                <div class="description">                            
+                                    <img class="colours" src="{{ url_for('static', filename='images/colours/' + image_dict[image] + '.png') }}">
+                                    <h3>{{ colour_dict[image_dict[image]] }}</h3>
+                                </div>
+                                
+                        </div>
+                            {% endfor %}
+                        </div>
+                        <i class="fa-solid fa-angle-right"></i>
+                    </div>
+                </div>
+            </div>
+  
+            <div class="bottom-banner">
+            </div>
+        </div>  
+    </body>
+</html>
+
+<script>
+//    document.getElementById('selected_option').addEventListener('change', function () {
+//             var selectedValue = this.value;
+//             if (selectedValue) {
+//                 window.location.href = "/virtualtryon/" + selectedValue;
+//             }
+//     });
+    var components = document.getElementById('carousel').querySelectorAll('.products')
+    components.forEach(function(component) {
+        component.addEventListener("click", function(event) {
+            if (event.target.style.backgroundColor == 'white') {
+                components.forEach(function(component) {
+                    component.style.backgroundColor = 'white';
+                });
+                event.target.style.backgroundColor = 'grey';
+            } else {
+                event.target.style.backgroundColor = 'white';
+            }
+        });
+        component.addEventListener("mouseenter", function(event) {
+            if (event.target.style.backgroundColor != 'grey') {
+                event.target.style.backgroundColor = '#FFFDD0';
+            }
+        });
+        component.addEventListener("mouseleave", function(event) {
+            if (event.target.style.backgroundColor != 'grey') {
+                event.target.style.backgroundColor = 'white';
+            }
+        })
+    });
+
+    const carousel = document.querySelector(".carousel"),
+    firstImg = carousel.querySelectorAll("img")[0],
+    arrowIcons = document.querySelectorAll(".container i");
+
+    let isDragStart = false, isDragging = false, prevPageX, prevScrollLeft, positionDiff;
+
+    arrowIcons.forEach(icon => {
+        icon.addEventListener("click", () => {
+            let firstImgWidth = firstImg.clientWidth + 14;
+            carousel.scrollLeft += icon.id == "left" ? -firstImgWidth : firstImgWidth;
+            setTimeout(() => showHideIcons(), 60);
+        });
+    });
+
+    const autoSlide = () => {
+        if(carousel.scrollLeft - (carousel.scrollWidth - carousel.clientWidth) > -1 || carousel.scrollLeft <= 0) return;
+
+        positionDiff = Math.abs(positionDiff);
+        let firstImgWidth = firstImg.clientWidth + 500;
+        let valDifference = firstImgWidth - positionDiff;
+
+        if(carousel.scrollLeft > prevScrollLeft) {
+            return carousel.scrollLeft += positionDiff > firstImgWidth / 3 ? valDifference : -positionDiff;
+        }
+        carousel.scrollLeft -= positionDiff > firstImgWidth / 3 ? valDifference : -positionDiff;
+    }
+
+    const dragStart = (e) => {
+        isDragStart = true;
+        prevPageX = e.pageX || e.touches[0].pageX;
+        prevScrollLeft = carousel.scrollLeft;
+    }
+    const dragging = (e) => {
+        if(!isDragStart) return;
+        e.preventDefault();
+        isDragging = true;
+        carousel.classList.add("dragging");
+        positionDiff = (e.pageX || e.touches[0].pageX) - prevPageX;
+        carousel.scrollLeft = prevScrollLeft - positionDiff;
+        showHideIcons();
+    }
+    const dragStop = () => {
+        isDragStart = false;
+        carousel.classList.remove("dragging");
+
+        if(!isDragging) return;
+        isDragging = false;
+        autoSlide();
+    }
+
+    carousel.addEventListener("mousedown", dragStart);
+    carousel.addEventListener("touchstart", dragStart);
+
+    document.addEventListener("mousemove", dragging);
+    carousel.addEventListener("touchmove", dragging);
+
+    document.addEventListener("mouseup", dragStop);
+    carousel.addEventListener("touchend", dragStop);
+
+    const dropArea = document.getElementById("drop-area");
+    const inputFile = document.getElementById("file");
+    const imageView = document.getElementById("img-view");
+
+    inputFile.addEventListener("change", uploadImage);
+
+    function uploadImage() {
+        let imgLink = URL.createObjectURL(inputFile.files[0]);
+        imageView.style.backgroundImage = `url(${imgLink})`;
+        imageView.style.backgroundRepeat = `no-repeat`;
+        imageView.style.backgroundPosition = `center`;
+        imageView.style.backgroundSize = `500px`;
+        imageView.textContent = "";
+        imageView.style.border = 0;
+
+    }
+    dropArea.addEventListener("dragover", function(e){
+        e.preventDefault();
+    });
+    dropArea.addEventListener("drop", function(e){
+        e.preventDefault();
+        inputFile.files = e.dataTransfer.files;
+        uploadImage()
+    });
+</script>
+
+
+<style>
+    .page {
+        background-image: url("https://www.loreal-paris.co.uk/-/media/project/loreal/brand-sites/oap/emea/uk/articles/virtual-beauty-tools/infaillible-24h-matte-cover.jpg");
+        background-repeat: no-repeat;
+    }
+    h3 {
+        margin-top: 15px;
+        font-size: 11px;
+        align-items:center;
+    }
+    .description {
+        display: flex;
+        outline: .2rem solid #222;
+    }
+    .colours {
+        width: 80px;
+        object-fit: cover;
+        object-position: 25% 25%;
+    }
+
+    body {
+        background-color: whitesmoke;
+    }
+    .content {
+        display: flex;
+        background-position:50%;
+        align-items:center;
+    }
+    *{
+        margin: 0px;
+        padding: 0px;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif
+    }
+    .header {
+        position: absolute;
+        top: 0;
+    }
+    .products {
+        outline: .2rem solid #222;
+        background-color: white;
+        cursor: pointer;
+        height: 180px;
+        object-fit:cover;
+        width: 200px;
+        padding: 10px;
+        cursor: pointer;
+    }
+    .panel:hover {
+        transform: scale(1.1);
+    }
+    .product_panel {
+        display: flex;
+        position: fixed;
+        top: 0;
+        right: 0;
+        width: 30%; 
+        height: 80vh;
+        justify-content: center;
+        margin-right: 300px;
+    }
+
+    .container {
+        display:flex;
+        max-width: 1000px;
+        position: relative;
+        padding: 10px;
+        background-color: darkslategray;
+        border-radius:15px;
+    }
+    .container i{
+        top: 50%;
+        height: 44px;
+        width: 44px;
+        color: grey;
+        cursor: pointer;
+        font-size: 1.15rem;
+        position: absolute;
+        text-align: center;
+        line-height: 44px;
+        background: #fff;
+        border-radius: 50%;
+        transform: translateY(-25%);
+        transition: transform 0.1s linear;
+    }
+    .container i:active{
+        transform: translateY(-50%) scale(0.9);
+    }
+    .container i:hover{
+        background: darkslategrey;
+    }
+    .container i:first-child{
+        left: -60px;
+    }
+    .container i:last-child{
+        right: -60px;
+    }
+    .container .carousel{
+        display: flex;
+        cursor: pointer;
+        overflow: hidden;
+        white-space: nowrap;
+        scroll-behavior: smooth;
+        padding: 10px;
+    }
+    .panel {
+        background: white;
+        margin: 15px;
+        transition: .3s;
+    }
+
+    .carousel.dragging{
+        cursor: grab;
+        scroll-behavior: auto;
+    }
+    .carousel.dragging img{
+        pointer-events: none;
+    }
+
+    @media screen and (max-width: 100px) {
+        .carousel img{
+            width: calc(100% / 2);
+        }
+    }
+    @media screen and (max-width: 500px) {
+        .carousel img{
+            width: 100%;
+        }
+    }
+    @media screen and (max-width: 1000px) {
+        .product_panel {
+            visibility: hidden;
+        }
+        .drop {
+            visibility: hidden;
+        }
+    }
+    .top-banner {
+        top: 0;
+        left: 0;
+        width: 100%;
+        background-color: darkslategray;
+        padding: 10px 0;
+        text-align: center;
+        position: relative;
+    }
+    .bottom-banner {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background-color: darkslategray;
+        color: white;
+        padding: 10px;
+        text-align: center;
+    }
+    .logo {
+        width: 80px;
+        height: 50px;
+        border-radius: 3px;
+        transition: .5s;
+    }
+    .drop {
+        margin: 50px;
+        display: flex;
+        background:whitesmoke;
+        align-items:center;
+    }
+    #drop-area {
+        width: 500px;
+        height: 500px;
+        padding: 30px;
+        background: darkslategrey;
+        text-align: center;
+        border-radius: 20px;
+    }
+    #img-view {
+        margin-top: 50px;
+        height: 400px;
+        border-radius: 20px;
+        border: 2px dashed grey;
+        background: whitesmoke;
+    }
+    #img-view img {
+        width: 50px;
+        margin-top: 25px;
+        background-repeat: no-repeat;
+    }
+    #img-view span {
+        display:block;
+        font-size: 12px;
+        color: #777;
+        margin-top: 15px;
+        background-size: cover;
+    }
+    p{
+        font-size:15px;
+        text-align: center;
+        margin: 10px;
+    }
+
+</style>
