@@ -5,7 +5,12 @@
     </head>
     <body>
         <div class="top-banner">
-            <img class=logo src="https://logos-world.net/wp-content/uploads/2020/04/LOreal-Logo.png">
+            <a href= "/home">
+                <img class=logo src="https://logos-world.net/wp-content/uploads/2020/04/LOreal-Logo.png">
+            </a>
+        </div>
+        <div class="header">
+            <img class="big-image" src="">
         </div>
         <div class="content">
             <div class="container">
@@ -22,7 +27,9 @@
             </div>
             <div class="container">
                 <div class="card">
-                    <img class=panel src="https://images.hellomagazine.com/horizon/landscape/deaceade5b9a-dpcouturegroupbalmain-t.jpg?tx=c_fill%2Cw_1200">
+                    <a href="virtualtryon/all" >
+                        <img class=panel src="https://images.hellomagazine.com/horizon/landscape/deaceade5b9a-dpcouturegroupbalmain-t.jpg?tx=c_fill%2Cw_1200">
+                    </a>
                     <div class="intro">
                         <h1>Lipstick Virtual Try-On</h1>
                         <p>Try on our L'Oreal lipstick shades</p>
@@ -37,6 +44,17 @@
 </html>
 
 <style>
+    .header {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+        background-color: #EAEAEA;
+        outline-color: black;
+    }
+    .header img {
+        width: 50%;
+    }
     *{
         margin: 0px;
         padding: 0px;
@@ -53,9 +71,11 @@
         display: flex;
         justify-content: center;
         height: 90vh;
-        background:whitesmoke;
+        background:#EAEAEA;
         background-position:50%;
         align-items:center;
+        background-image: url("https://www.loreal-paris.co.uk/-/media/project/loreal/brand-sites/oap/emea/uk/articles/virtual-beauty-tools/infaillible-24h-matte-cover.jpg");
+        background-repeat: no-repeat;
     }
     .container {
         display: flex;

@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, jsonify
 import os
 import base64
 import time
@@ -10,27 +10,50 @@ app = Flask(__name__, static_url_path='/static')
 app.config['ALLOWED_EXTENSIONS'] = {'png', 'jpg', 'jpeg'}
 PRODUCTS_FILE = './static/lipshades.xlsx'
 IMAGE_FOLDER = './static/images'
-app.config['STATIC_FOLDER'] = 'static/images'
 
 # Function to check if the file extension is allowed
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
 
-@app.route('/')
+@app.route('/home')
 def home():
     return render_template('home.html')
 
-@app.route('/virtualtryon', methods=['GET', 'POST'])
+@app.route('/virtualtryon/all', methods=['GET', 'POST'])
 def virtualtryon():
-    intense_volume_matte_dict = {}
-    reds_of_worth_dict = {}
-    for filename in os.listdir('./static/images/intense_volume_matte'):
-        if 'png' in filename:
-            intense_volume_matte_dict[filename] = filename.split('.')[0]
-    for filename in os.listdir('./static/images/reds_of_worth'):
-        if 'png' in filename:
-            reds_of_worth_dict[filename] = filename.split('.')[0]
-    return render_template('virtualtryon.html', intense_volume_matte_dict=intense_volume_matte_dict, reds_of_worth_dict=reds_of_worth_dict)
+    product_line_dict = {}
+    df = pd.read_excel('lipshades.xlsx')
+    colour_dict = dict(zip(df['product_id'], df['color']))
+    for folder in os.listdir(f'./static/images'):
+        if '.DS_Store' not in folder and folder != 'colours':
+            for filename in os.listdir(f'./static/images/{folder}'):
+                path = f'{folder}/{filename}'
+                if 'png' in filename:
+                    product_line_dict[path] = filename.split('.')[0]
+    return render_template('virtualtryon.html', image_dict=product_line_dict, colour_dict=colour_dict)
+
+@app.route('/test')
+def test():
+    return render_template('test.html')
+
+# @app.route('/virtualtryon/intense_volume_matte', methods=['GET', 'POST'])
+# def virtualtryon_intense_volume_matte():
+#     product_line_dict = {}
+#     for filename in os.listdir(f'./static/images/intense_volume_matte'):
+#         path = f'intense_volume_matte/{filename}'
+#         if 'png' in filename:
+#             product_line_dict[path] = filename.split('.')[0]
+#     return render_template('virtualtryon.html', image_dict=product_line_dict)
+
+# @app.route('/virtualtryon/reds_of_worth', methods=['GET', 'POST'])
+# def virtualtryon_reds_of_worth():
+#     product_line_dict = {}
+#     for filename in os.listdir(f'./static/images/reds_of_worth'):
+#         path = f'reds_of_worth/{filename}'
+#         if 'png' in filename:
+#             product_line_dict[path] = filename.split('.')[0]
+#     return render_template('virtualtryon.html', image_dict=product_line_dict)
+
 
 @app.route('/upload', methods=['GET', 'POST'])
 def upload():
