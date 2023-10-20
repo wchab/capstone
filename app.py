@@ -2,13 +2,14 @@ from flask import Flask, render_template, request, redirect, url_for, jsonify
 import os
 import base64
 import time
-from PredictMask import PredictImage
+# from PredictMask import PredictImage
 import pandas as pd
 import shutil
 
 app = Flask(__name__, static_url_path='/static')
 app.config['ALLOWED_EXTENSIONS'] = {'png', 'jpg', 'jpeg'}
-PRODUCTS_FILE = 'lipshades.xlsx'
+# PRODUCTS_FILE = 'lipshades.xlsx'
+PRODUCTS_FILE = 'lips_loreal.xlsx'
 IMAGE_FOLDER = 'product_pictures'
 
 # Function to check if the file extension is allowed
@@ -72,14 +73,14 @@ def upload_file():
     if file and allowed_file(file.filename):
         uploads_filename = os.path.join("uploads", file.filename)
         file.save(uploads_filename)
-        processed_filename = PredictImage().predict_mask(uploads_filename)
+        # processed_filename = PredictImage().predict_mask(uploads_filename)
         # Read the image and convert it to base64 for passing to the HTML template
         
-        with open(uploads_filename, "rb") as raw_image_file:
-            raw = base64.b64encode(raw_image_file.read()).decode("utf-8")
-        with open(processed_filename, "rb") as processed_image_file:
-            processed = base64.b64encode(processed_image_file.read()).decode("utf-8")
-        return render_template('upload.html', image_data1=raw, image_data2=processed)
+        # with open(uploads_filename, "rb") as raw_image_file:
+        #     raw = base64.b64encode(raw_image_file.read()).decode("utf-8")
+        # with open(processed_filename, "rb") as processed_image_file:
+        #     processed = base64.b64encode(processed_image_file.read()).decode("utf-8")
+        return render_template('upload.html')#, image_data1=raw, image_data2=processed)
     else:
         return "Invalid file format. Allowed file formats are: png, jpg, jpeg, gif"
 
@@ -95,11 +96,13 @@ def get_product_info(product_hexcode):
     try:
         df = pd.read_excel(os.path.join('static', PRODUCTS_FILE))
 
-        product_name = df[df['hexcode'] == product_hexcode]['name'].iloc[0]
-        product_colour = df[df['hexcode'] == product_hexcode]['color'].iloc[0]
-        product_id = df[df['hexcode'] == product_hexcode]['product_id'].iloc[0]
+        product_name = df[df['hex_colour'] == product_hexcode]['name'].iloc[0]
+        # product_colour = df[df['hex_colour'] == product_hexcode]['color'].iloc[0]
+        product_price = df[df['hex_colour'] == product_hexcode]['price'].iloc[0]
+        product_price_str = f"{product_price:.2f}"
+        product_id = df[df['hex_colour'] == product_hexcode]['prod_id'].iloc[0]
 
-        return product_name, product_colour, product_id
+        return product_name, product_price_str, product_id
     
     except Exception as e:
         print(f"Error loading or searching in the Excel file: {e}")
@@ -128,11 +131,11 @@ def get_product_info(product_hexcode):
 #         return None  
 
 
-@app.route('/shadematched/9F5656')
+@app.route('/shadematched/FFC0CB')
 def match_product():
-    product_hexcode = "9F5656"
+    product_hexcode = "#FFC0CB"
 
-    product_name, product_colour, product_id = get_product_info(product_hexcode)
+    product_name, product_price, product_id = get_product_info(product_hexcode)
     # product_name = get_product_name(product_hexcode)
     # product_colour = get_product_colour(product_hexcode)
     # product_id = get_product_id(product_hexcode)
@@ -146,7 +149,7 @@ def match_product():
         image_path = os.path.join('static', IMAGE_FOLDER, image_filename)
 
         print(f"Product Name: {product_name}")
-        print(f"Product Colour: {product_colour}")
+        print(f"Product Price: {product_price}")
         print(f"Product ID: {product_id}")
         print(f"Image File Name: {image_filename}")
         print(f"Image Path: {image_path}")
@@ -157,10 +160,10 @@ def match_product():
                 product_image_data = base64.b64encode(product_image_file.read()).decode("utf-8")
                 print("Image data is available")
 
-            return render_template('shadematched.html', product_name=product_name, product_colour=product_colour, product_id=product_id, product_image_data=product_image_data)
+            return render_template('shadematched.html', product_name=product_name, product_price=product_price, product_id=product_id, product_image_data=product_image_data)
         else:
             print("Image file not found")
-            return render_template('shadematched.html', product_name=product_name, product_colour=product_colour, product_id=product_id, product_image_data=None)  # Or handle the case where the image file is not found
+            return render_template('shadematched.html', product_name=product_name, product_price=product_price, product_id=product_id, product_image_data=None)  # Or handle the case where the image file is not found
 
     else:
         print("Product information not found")
