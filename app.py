@@ -4,13 +4,14 @@ import base64
 import time
 # from PredictMask import PredictImage
 import pandas as pd
-import shutil
+import ShadeRecommender
 
 app = Flask(__name__, static_url_path='/static')
 app.config['ALLOWED_EXTENSIONS'] = {'png', 'jpg', 'jpeg'}
 # PRODUCTS_FILE = 'lipshades.xlsx'
 PRODUCTS_FILE = 'lips_loreal.xlsx'
 IMAGE_FOLDER = 'product_pictures'
+uploads_filename = "./uploads/jennie.jpg"
 
 # Function to check if the file extension is allowed
 def allowed_file(filename):
@@ -88,9 +89,9 @@ def upload_file():
 def uploaded_file(filename):
     return f'<h1>Uploaded Image:</h1><img src="{url_for("static", filename="uploads/" + filename)}">'
 
-@app.route('/shadematched')
-def shadematched():
-    return render_template('shadematched.html')
+# @app.route('/shadematched')
+# def shadematched():
+#     return render_template('shadematched.html')
 
 def get_product_info(product_hexcode):
     try:
@@ -131,16 +132,26 @@ def get_product_info(product_hexcode):
 #         return None  
 
 
-@app.route('/shadematched/FFC0CB')
+# @app.route('/shadematched/FFC0CB')
+@app.route('/shadematched')
 def match_product():
-    product_hexcode = "#FFC0CB"
+    # product_hexcode = "#FFC0CB"
 
-    product_name, product_price, product_id = get_product_info(product_hexcode)
+    # product_name, product_price, product_id = get_product_info(product_hexcode)
     # product_name = get_product_name(product_hexcode)
     # product_colour = get_product_colour(product_hexcode)
     # product_id = get_product_id(product_hexcode)
 
     # return render_template('shadematched.html', product_name=product_name, product_colour=product_colour, product_id=product_id)
+
+    product_info = ShadeRecommender.ShadeRecommender(uploads_filename).product_dic
+    print(product_info)
+    product_name = product_info["name"]
+    product_price = product_info["price"]
+    product_price_str = f"{product_price:.2f}"
+    product_id = product_info["prod_id"]
+    product_link = "https://www.google.com/"
+    product_hexcode = product_info["hex_colour"][1:]
 
     if product_id is not None:
         # Assuming the product ID is the name of the image file
@@ -149,8 +160,9 @@ def match_product():
         image_path = os.path.join('static', IMAGE_FOLDER, image_filename)
 
         print(f"Product Name: {product_name}")
-        print(f"Product Price: {product_price}")
+        print(f"Product Price: {product_price_str}")
         print(f"Product ID: {product_id}")
+        print(f"Product hexcode: {product_hexcode}")
         print(f"Image File Name: {image_filename}")
         print(f"Image Path: {image_path}")
 
@@ -160,10 +172,10 @@ def match_product():
                 product_image_data = base64.b64encode(product_image_file.read()).decode("utf-8")
                 print("Image data is available")
 
-            return render_template('shadematched.html', product_name=product_name, product_price=product_price, product_id=product_id, product_image_data=product_image_data)
+            return render_template('shadematched.html', product_name=product_name, product_price=product_price_str, product_id=product_id, product_image_data=product_image_data, product_link = product_link)
         else:
             print("Image file not found")
-            return render_template('shadematched.html', product_name=product_name, product_price=product_price, product_id=product_id, product_image_data=None)  # Or handle the case where the image file is not found
+            return render_template('shadematched.html', product_name=product_name, product_price=product_price_str, product_id=product_id, product_image_data=None, product_link = product_link)  # Or handle the case where the image file is not found
 
     else:
         print("Product information not found")
