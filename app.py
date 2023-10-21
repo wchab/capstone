@@ -2,7 +2,6 @@ from flask import Flask, render_template, request, redirect, url_for, jsonify
 import os
 import base64
 import time
-from PredictMask import PredictImage
 import pandas as pd
 import shutil
 
@@ -22,19 +21,37 @@ def home():
 @app.route('/virtualtryon/all', methods=['GET', 'POST'])
 def virtualtryon():
     product_line_dict = {}
-    df = pd.read_excel('lipshades.xlsx')
+    df = pd.read_excel('./static/lipshades.xlsx')
+    df['hexcode'] = df['hexcode'].map(lambda x: str(x))
+    df['wordsearch'] = df['name'] + df['color'] + df['hexcode']
     colour_dict = dict(zip(df['product_id'], df['color']))
+    search_dict = dict(zip(df['product_id'], df['wordsearch']))
     for folder in os.listdir(f'./static/images'):
         if '.DS_Store' not in folder and folder != 'colours':
             for filename in os.listdir(f'./static/images/{folder}'):
                 path = f'{folder}/{filename}'
                 if 'png' in filename:
                     product_line_dict[path] = filename.split('.')[0]
-    return render_template('virtualtryon.html', image_dict=product_line_dict, colour_dict=colour_dict)
+    return render_template('virtualtryon.html', image_dict=product_line_dict, colour_dict=colour_dict, search_dict=search_dict)
 
-@app.route('/test')
-def test():
-    return render_template('test.html')
+@app.route('/newpage', methods=['GET'])
+def newpage():
+    search_word = request.args.get('q')
+
+    product_line_dict = {}
+    df = pd.read_excel('./static/lipshades.xlsx')
+    df['hexcode'] = df['hexcode'].map(lambda x: str(x))
+    df['wordsearch'] = (df['name'] + df['color'] + df['hexcode']).map(lambda x: x.lower())
+    colour_dict = dict(zip(df['product_id'], df['color']))
+    search_dict = dict(zip(df['product_id'], df['wordsearch']))
+
+    for folder in os.listdir(f'./static/images'):
+        if '.DS_Store' not in folder and folder != 'colours':
+            for filename in os.listdir(f'./static/images/{folder}'):
+                path = f'{folder}/{filename}'
+                if 'png' in filename:
+                    product_line_dict[path] = filename.split('.')[0]
+    return render_template('newpage.html',image_dict=product_line_dict, colour_dict=colour_dict, search_dict=search_dict, search_word=search_word)
 
 # @app.route('/virtualtryon/intense_volume_matte', methods=['GET', 'POST'])
 # def virtualtryon_intense_volume_matte():
@@ -72,14 +89,12 @@ def upload_file():
     if file and allowed_file(file.filename):
         uploads_filename = os.path.join("uploads", file.filename)
         file.save(uploads_filename)
-        processed_filename = PredictImage().predict_mask(uploads_filename)
         # Read the image and convert it to base64 for passing to the HTML template
         
         with open(uploads_filename, "rb") as raw_image_file:
             raw = base64.b64encode(raw_image_file.read()).decode("utf-8")
-        with open(processed_filename, "rb") as processed_image_file:
-            processed = base64.b64encode(processed_image_file.read()).decode("utf-8")
-        return render_template('upload.html', image_data1=raw, image_data2=processed)
+       
+        return render_template('upload.html', image_data1=raw)
     else:
         return "Invalid file format. Allowed file formats are: png, jpg, jpeg, gif"
 
