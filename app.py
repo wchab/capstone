@@ -12,7 +12,7 @@ app.config['ALLOWED_EXTENSIONS'] = {'png', 'jpg', 'jpeg'}
 # PRODUCTS_FILE = 'lipshades.xlsx'
 PRODUCTS_FILE = 'lips_loreal.xlsx'
 IMAGE_FOLDER = 'product_pictures'
-uploads_filename = "./uploads/jennie.jpg"
+uploads_filename = "./static/uploads/jennie.jpg"
 
 # Function to check if the file extension is allowed
 def allowed_file(filename):
@@ -176,6 +176,17 @@ def match_product():
 @app.route('/nomatch')
 def nomatch():
     return render_template('nomatch.html')
+
+@app.route('/lipvalidation')
+def lip_validation():
+    mask_directory = ShadeRecommender.ShadeRecommender(uploads_filename).save_predicted_mask()
+
+    with open(mask_directory, "rb") as product_image_file:
+        product_image_data = base64.b64encode(product_image_file.read()).decode("utf-8")
+
+    print(f"Image Path: {mask_directory}")
+
+    return render_template('lipvalidation.html', product_image_data=product_image_data)
 
 if __name__ == '__main__':
     app.run(debug=True)

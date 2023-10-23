@@ -11,7 +11,7 @@ import segmentation_models_pytorch as smp
 class ShadeRecommender():
     def __init__(self, img_path):
         self.img_path = img_path
-        self.segmodel = torch.load('./best_model.pth')
+        self.segmodel = torch.load('./static/best_model.pth')
         self.output = self.predict_mask()
         self.colour_rgb  = self.extract_avg_colour()
         self.product_df = pd.read_excel('lips_loreal.xlsx')

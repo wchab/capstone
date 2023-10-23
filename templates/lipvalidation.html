@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>L'Oreal - Match Found</title>
+        <title>L'Oreal - Lip Validation</title>
     </head>
     <body>
         <div class="top-banner">
@@ -11,26 +11,13 @@
         </div>
         <div class="content">
             <div class="container">
-                <div class="title">Great, we found a matching product for you!</div>
+                <div class="error-title">Please check if your lips have been identified correctly.</div>
                 <br><br>
-                
-                {% if product_image_data %}
-                    <img src="data:image/png;base64, {{ product_image_data }}" alt="Product Image">
-                {% else %}
-                    <p>No image available for this product</p>
-                {% endif %}
-
-                <div class="desc">Product Name: {{ product_name }}
-                    <br>
-                    Price: ${{ product_price }}
-                </div>
+                <img src="data:image/png;base64, {{ product_image_data }}" alt="Predicted Lips">
                 <br>
                 <div class="button-container">
-                    <button class="try-button" onclick="window.location.href = '/virtualtryon'">Try Product Virtually</button>
-                    <button class="moreinfo-button" onclick=" window.open('{{ product_link }}', '_blank')">More Info</button>
-                    <br>
-                    <button class="reupload-button" onclick="window.location.href = '/upload'">Reupload Picture</button>
-                    <!-- <button class="home-button" onclick="window.location.href = '/'">Home</button> -->
+                    <button class="yes-button" onclick="window.location.href = '/shadematched'">Yes (Continue Matching)</button>
+                    <button class="no-button" onclick="window.location.href = '/home'">No (Back To Home)</button>
                 </div>
             </div>
         </div>
@@ -63,14 +50,14 @@
         border-radius: 10px;
         box-shadow: 5px 5px 20px black;
     }
-    .title {
+    .error-title {
         text-align: center;
         font-weight: bold;
         font-size: 50px;
         display: block;
         color: whitesmoke;
     }
-    .desc {
+    .error-desc {
         text-align: center;
         display: block;
         color: whitesmoke;
@@ -92,10 +79,6 @@
     }
     button:hover {
         background-color: lightslategray;
-    }
-    img {
-        display: block;
-        margin: 0 auto;
     }
     .card {
         height: 450px;
@@ -138,5 +121,9 @@
         height: 50px;
         border-radius: 3px;
         transition: .5s;
+    }
+    img {
+        display: block;
+        margin: 0 auto;
     }
 </style>
