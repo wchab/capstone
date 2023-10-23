@@ -1,9 +1,11 @@
-from flask import Flask, render_template, request, redirect, url_for, jsonify
+from flask import Flask, render_template, request, redirect, url_for, jsonify, send_file
 import os
 import base64
 import time
 import pandas as pd
 import shutil
+
+from LipColorizer import LipColorizer
 
 app = Flask(__name__, static_url_path='/static')
 app.config['ALLOWED_EXTENSIONS'] = {'png', 'jpg', 'jpeg'}
@@ -14,89 +16,64 @@ IMAGE_FOLDER = 'product_pictures'
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
 
-@app.route('/home')
-def home():
-    return render_template('home.html')
-
-@app.route('/virtualtryon/all', methods=['GET', 'POST'])
-def virtualtryon():
-    product_line_dict = {}
-    df = pd.read_excel('./static/lipshades.xlsx')
-    df['hexcode'] = df['hexcode'].map(lambda x: str(x))
-    df['wordsearch'] = df['name'] + df['color'] + df['hexcode']
-    colour_dict = dict(zip(df['product_id'], df['color']))
-    search_dict = dict(zip(df['product_id'], df['wordsearch']))
-    for folder in os.listdir(f'./static/images'):
-        if '.DS_Store' not in folder and folder != 'colours':
-            for filename in os.listdir(f'./static/images/{folder}'):
-                path = f'{folder}/{filename}'
-                if 'png' in filename:
-                    product_line_dict[path] = filename.split('.')[0]
-    return render_template('virtualtryon.html', image_dict=product_line_dict, colour_dict=colour_dict, search_dict=search_dict)
-
-@app.route('/newpage', methods=['GET'])
-def newpage():
-    search_word = request.args.get('q')
-
+@app.route('/api/products', methods=['GET'])
+def get_products():
     product_line_dict = {}
     df = pd.read_excel('./static/lipshades.xlsx')
     df['hexcode'] = df['hexcode'].map(lambda x: str(x))
     df['wordsearch'] = (df['name'] + df['color'] + df['hexcode']).map(lambda x: x.lower())
     colour_dict = dict(zip(df['product_id'], df['color']))
     search_dict = dict(zip(df['product_id'], df['wordsearch']))
-
+    hexcode_dict = dict(zip(df['product_id'], df['hexcode']))
+    product_line_dict = dict(zip(df['product_id'], df['product_line']))
     for folder in os.listdir(f'./static/images'):
         if '.DS_Store' not in folder and folder != 'colours':
             for filename in os.listdir(f'./static/images/{folder}'):
-                path = f'{folder}/{filename}'
                 if 'png' in filename:
-                    product_line_dict[path] = filename.split('.')[0]
-    return render_template('newpage.html',image_dict=product_line_dict, colour_dict=colour_dict, search_dict=search_dict, search_word=search_word)
+                    product_number = filename.split('.')[0]
+                    product_line_dict[product_number] = {
+                                                    'color': colour_dict[product_number],
+                                                    'hexcode': hexcode_dict[product_number],
+                                                    'product_line': product_line_dict[product_number],
+                                                    'wordsearch': search_dict[product_number]}
+    return jsonify(product_line_dict)
 
-# @app.route('/virtualtryon/intense_volume_matte', methods=['GET', 'POST'])
-# def virtualtryon_intense_volume_matte():
-#     product_line_dict = {}
-#     for filename in os.listdir(f'./static/images/intense_volume_matte'):
-#         path = f'intense_volume_matte/{filename}'
-#         if 'png' in filename:
-#             product_line_dict[path] = filename.split('.')[0]
-#     return render_template('virtualtryon.html', image_dict=product_line_dict)
+@app.route('/home')
+def home():
+    return render_template('home.html')
 
-# @app.route('/virtualtryon/reds_of_worth', methods=['GET', 'POST'])
-# def virtualtryon_reds_of_worth():
-#     product_line_dict = {}
-#     for filename in os.listdir(f'./static/images/reds_of_worth'):
-#         path = f'reds_of_worth/{filename}'
-#         if 'png' in filename:
-#             product_line_dict[path] = filename.split('.')[0]
-#     return render_template('virtualtryon.html', image_dict=product_line_dict)
+@app.route('/virtualtryon', methods=['GET', 'POST'])
+def virtualtryon():
+    if request.files:
+        if 'file' not in request.files:
+            return redirect(request.url)
+
+        file = request.files['file']
+
+        if file.filename == '':
+            return redirect(request.url)
+
+        if file and allowed_file(file.filename):
+            df = pd.read_excel('./static/lipshades.xlsx')
+            df['hexcode'] = df['hexcode'].map(lambda x: str(x))
+            hexcode_dict = dict(zip(df['product_id'], df['hexcode']))
+            lip_colorizer_model_path = os.path.join("static", "shape_predictor_68_face_landmarks.dat") 
+            uploads_filename = os.path.join("static", "playground", file.filename)
+            
+            file.save(uploads_filename)
+            for key, value in hexcode_dict.items():
+                destination_filename = os.path.join("static", "playground", "modified", f"{key}.png")
+                lipcolorizer = LipColorizer(lip_colorizer_model_path, uploads_filename)
+                image = lipcolorizer.colorize_lips(f'#{value}')
+                lipcolorizer.saveImage(image, destination_filename)
+        return render_template('virtualtryon.html')
+    else:
+        return render_template('virtualtryon.html')
 
 
 @app.route('/upload', methods=['GET', 'POST'])
 def upload():
     return render_template('upload.html')
-
-@app.route('/upload_file', methods=['GET', 'POST'])
-def upload_file():
-    if 'file' not in request.files:
-        return redirect(request.url)
-
-    file = request.files['file']
-
-    if file.filename == '':
-        return redirect(request.url)
-
-    if file and allowed_file(file.filename):
-        uploads_filename = os.path.join("uploads", file.filename)
-        file.save(uploads_filename)
-        # Read the image and convert it to base64 for passing to the HTML template
-        
-        with open(uploads_filename, "rb") as raw_image_file:
-            raw = base64.b64encode(raw_image_file.read()).decode("utf-8")
-       
-        return render_template('upload.html', image_data1=raw)
-    else:
-        return "Invalid file format. Allowed file formats are: png, jpg, jpeg, gif"
 
 @app.route('/uploads/<filename>')
 def uploaded_file(filename):

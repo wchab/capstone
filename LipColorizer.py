@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 import dlib
 import os
+from PIL import ImageColor
 
 class LipColorizer:
     def __init__(self, shape_predictor_path, image_path):
@@ -28,7 +29,9 @@ class LipColorizer:
         else:
             return mask
 
-    def colorize_lips(self, b, g, r):
+    def colorize_lips(self, hexcode):
+        rgb = ImageColor.getcolor(hexcode, "RGB")
+        r, g, b= rgb[0], rgb[1], rgb[2]
         imgGray = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
         faces = self.detector(imgGray)
 
@@ -53,15 +56,15 @@ class LipColorizer:
         
     def saveImage(self, colored_image, image_path):
         image_name, image_ext = os.path.splitext(image_path)
-        new_name = image_name + "_colored" + image_ext
+        new_name = image_name + image_ext
         cv2.imwrite(new_name, colored_image)
 
 if __name__ == "__main__":
-    shape_predictor_path = "shape_predictor_68_face_landmarks.dat"
-    image_path = "galgadot.jpg"
+    shape_predictor_path = "./static/shape_predictor_68_face_landmarks.dat"
+    image_path = "./static/playground/jennie.jpg"
 
     lip_colorizer = LipColorizer(shape_predictor_path, image_path)
-    colored_image = lip_colorizer.colorize_lips()
+    colored_image = lip_colorizer.colorize_lips('#781C44')
 
     cv2.imshow("Colored", colored_image)
     lip_colorizer.saveImage(colored_image, image_path)
