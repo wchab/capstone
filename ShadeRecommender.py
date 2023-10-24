@@ -14,7 +14,7 @@ class ShadeRecommender():
         self.segmodel = torch.load('./best_model.pth')
         self.output = self.predict_mask()
         self.colour_rgb  = self.extract_avg_colour()
-        self.product_df = pd.read_excel('lips_loreal.xlsx')
+        self.product_df = pd.read_excel('./static/lips_loreal_updated.xlsx')
         self.product_dic = self.recommend_product()
         
     def predict_mask(self):
