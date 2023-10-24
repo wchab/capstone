@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>L'Oreal Virtual Try-On</title>
+    </head>
+    <body>
+        <div class="top-banner">
+            <a href= "/home">
+                <img class=logo src="https://logos-world.net/wp-content/uploads/2020/04/LOreal-Logo.png">
+            </a>
+        </div>
+        <div class="header">
+            <img class="big-image" src="">
+        </div>
+        <div class="content">
+            <div class="drop">
+                <label for="input-file" id="drop-area">
+                    <form method="POST" action="/upload_file" enctype="multipart/form-data">
+                        <input type="file" accept="image/*" id="file", name="file"> 
+                        <input type="submit" value=" Upload ">
+                    </form>
+
+                    <div id="img-view">
+                        <img class=icon src="https://icon-library.com/images/drag-and-drop-icon/drag-and-drop-icon-8.jpg">
+                        <p> Drag and drop or click here to upload image</p>
+                        <span>Upload any images from desktop</span>
+                    </div>
+                </label>
+                <div class="panel">
+                   <div class="container">
+                        <form action="" class="search-bar">
+                            <input type="text" placeholder="" name="q" id="searchInput" autocomplete="off">
+                            <button id="submit-button" type="submit"><img src="./static/assets/search.png"></button>
+                        </form>
+                   </div>
+                   <div class="search-options">
+                    <form method="POST" id="operator">
+                        <select name="selected_option" id="selected_option">
+                            <option disabled selected value> -- Select an Option -- </option>
+                            <option value="all">All Lipstick Product Lines</option>
+                            <option value="intense_volume_matte">Intense Volume Matte</option>
+                        </select>
+                    </form>
+                    <form method="POST" id="operator">
+                        <select name="selected_option" id="selected_option">
+                            <option disabled selected value> -- Select an Colour -- </option>
+                            <option value="all">All Lipstick Product Lines</option>
+                            <option value="intense_volume_matte">Intense Volume Matte</option>
+                            <option value="reds_of_worth">Reds of Worth</option>
+                        </select>
+                    </form>
+                   </div>
+                    <div class="product_panel" id="product_panel">
+                        {% for image in image_dict.keys() %}
+                            {% if search_word == None or search_word in search_dict[image_dict[image]] %}
+                            <div class="products" id="products">
+                                <img class="product_picture" src="{{ url_for('static', filename='images/' + image) }}" alt="{{ image_dict[image] }}">
+                                <div class="description">                            
+                                    <img class="colours" src="{{ url_for('static', filename='images/colours/' + image_dict[image] + '.png') }}">
+                                    <div class="description_label"></div>
+                                    <h3>{{ colour_dict[image_dict[image]] }}</h3>
+                                </div>
+                            </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+        </div>
+        <div class="bottom-banner">
+            <p>Bottom Banner Content Goes Here</p>
+        </div>
+    </body>
+</html>
+
+<script>
+   //  document.addEventListener("DOMContentLoaded", function() {
+   //  var searchInput = document.getElementById("searchInput");
+   //  var searchResults = document.getElementById("searchResults");
+   
+   //  searchInput.addEventListener("keypress", function(event) {
+   //      if (event.key === "Enter") {
+   //          event.preventDefault();
+
+   //          document.getElementById("submit-button").click()
+   //          };
+   //      });
+   //  });
+   var search_word = None;
+   document.addEventListener("DOMContentLoaded", function() {
+    var searchInput = document.getElementById("searchInput");
+    var searchResults = document.getElementById("searchResults");
+   
+    searchInput.addEventListener("keypress", function(event) {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            search_word = searchInput.value;
+            };
+        });
+    });
+
+  var components = document.getElementById('product_panel').querySelectorAll('.products')
+    components.forEach(function(component) {
+        component.addEventListener("click", function(event) {
+            if (component.style.backgroundColor == 'white') {
+                components.forEach(function(component) {
+                    component.style.backgroundColor = 'white';
+                });
+                component.style.backgroundColor = 'grey';
+            } else {
+                component.style.backgroundColor = 'white';
+            }
+        });
+        component.addEventListener("mouseenter", function(event) {
+            if (event.target.style.backgroundColor != 'grey') {
+                event.target.style.backgroundColor = 'lightgrey';
+            }
+        });
+        component.addEventListener("mouseleave", function(event) {
+            if (event.target.style.backgroundColor != 'grey') {
+                event.target.style.backgroundColor = 'white';
+            }
+        });
+    });
+    const dropArea = document.getElementById("drop-area");
+    const inputFile = document.getElementById("file");
+    const imageView = document.getElementById("img-view");
+
+    inputFile.addEventListener("change", uploadImage);
+
+    function uploadImage() {
+        let imgLink = URL.createObjectURL(inputFile.files[0]);
+        imageView.style.backgroundImage = `url(${imgLink})`;
+        imageView.style.backgroundRepeat = `no-repeat`;
+        imageView.style.backgroundPosition = `center`;
+        imageView.style.backgroundSize = `500px`;
+        imageView.textContent = "";
+        imageView.style.border = 0;
+
+    }
+    dropArea.addEventListener("dragover", function(e){
+        e.preventDefault();
+    });
+    dropArea.addEventListener("drop", function(e){
+        e.preventDefault();
+        inputFile.files = e.dataTransfer.files;
+        uploadImage()
+    });
+</script>
+
+<style>
+    .search-options {
+        display:flex;
+    }
+    .container {
+        display: flex;
+    }
+    .search-bar {
+        width:1000px;
+        background: rgba(255,255,255,0.5);
+        display: flex;
+        align-items: center;
+        border-radius: 60px;
+        margin: 10px 0 10px 0;
+    }
+    .search-bar input {
+        background: transparent;
+        flex: 1;
+        border: 0;
+        outline: none;
+        padding: 24px 20px;
+        font-size: 20px;
+        color: grey;
+    }
+    ::placeholder {
+        color: grey;
+    }
+    .search-bar img {
+        width:25px;
+    }
+    .search-bar button {
+        border: 0px;
+        border-radius: 50%;
+        width: 60px;
+        height: 60px;
+        background: darkslategrey;
+        cursor: pointer;
+    }
+    .header {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+        background-color: #EAEAEA;
+        outline-color: black;
+    }
+    .header img {
+        width: 50%;
+    }
+    *{
+        margin: 0px;
+        padding: 0px;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 
+            'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 
+            'Helvetica Neue', sans-serif
+    }
+    .description {
+        display: flex;
+        align-content: center;
+    }
+    .description img {
+        width: 60%;
+        margin: -10px -10px -10px -20px;
+    }
+    .description h3 {
+        font-size:8px;
+        width: 40%;
+        margin: 6px -10px 0px -10px;
+    }
+    .colours {
+        mix-blend-mode:multiply;
+    }
+    .product_panel {
+        width:1000px;
+        height: 500px;
+        overflow: auto;
+        background-color:rgba(255,255,255,0.3);
+    }
+    .product_panel::-webkit-scrollbar {
+            width: 12px;
+        }
+
+    .product_panel::-webkit-scrollbar-track {
+        background: whitesmoke;
+    }
+
+    .product_panel::-webkit-scrollbar-thumb {
+        background: darkslategray;
+    }
+
+    .product_panel::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
+    .product_picture {
+        margin:2px;
+        object-fit:cover;
+        height: 150px;
+        width: 150px;
+        mix-blend-mode:multiply;
+        cursor: pointer;  
+    }
+    .products {
+        display:inline-block;
+        outline: .1rem solid lightgrey;
+        border-radius: 10px;
+        width: 160px;
+        margin: 20px 0px 0px 50px;
+        padding: 5px;
+        cursor: pointer;
+        background-color:white;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+    .products:hover {
+        transform: scale(1.05);
+    }
+
+    .panel {
+        height:500px;
+        margin-left: 50px;
+    }
+    .content {
+        justify-content: center;
+        height: 90vh;
+        background-position:50%;
+        align-items:center;
+        background-image: url("https://www.loreal.com/-/media/project/loreal/brand-sites/corp/master/lcorp/4-brands/consumer-products-division/loreal-paris/hero-oap-opt.jpg?rev=fd0c5cf661954ea99e00ba9fd2bf74ca");
+        background-repeat: no-repeat;
+        background-size:100% 100%;
+    }
+    .intro{
+        border-radius: 3px;
+        width:350px;
+        position: relative;
+        color: #FFFDD0;
+    }
+    .top-banner {
+        top: 0;
+        left: 0;
+        width: 100%;
+        background-color: darkslategrey;
+        padding: 10px 0;
+        text-align: center;
+        position: relative;
+    }
+    .bottom-banner {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background-color: darkslategray;
+        color: white;
+        padding: 10px;
+        text-align: center;
+    }
+    .logo {
+        width: 80px;
+        height: 50px;
+        border-radius: 3px;
+        transition: .5s;
+    }
+    .drop {
+        display: flex;
+        background:whitesmoke;
+        background-color:rgba(255,255,255,0);
+    }
+    #drop-area {
+        width: 450px;
+        height: 600px;
+        padding: 30px;
+        background: rgba(255,255,255,0.3);
+        text-align: center;
+        border-radius: 20px;
+    }
+    #img-view {
+        margin-top: 50px;
+        height: 400px;
+        border-radius: 20px;
+        border: 2px dashed grey;
+        background: whitesmoke;
+    }
+    #img-view img {
+        width: 50px;
+        margin-top: 25px;
+        background-repeat: no-repeat;
+    }
+    #img-view span {
+        display:block;
+        font-size: 10px;
+        color: #777;
+        margin-top: 15px;
+        background-size: cover;
+    }
+</style>
