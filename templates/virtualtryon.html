@@ -13,7 +13,9 @@
             <img class="big-image" src="">
         </div>
         <div class="content">
-         <div class="playground" id="playground">
+            <div class="loader">
+            </div>
+            <div class="playground" id="playground" >
          </div>
          <div class="panel">
             <div class="container">
@@ -22,7 +24,7 @@
                      <div id="submit-button"><img src="./static/assets/search.png"></div>
                </form>
             </div>
-            <div class="search-options">
+            <!-- <div class="search-options">
             <form method="POST" id="operator">
                <select name="selected_option" id="selected_option">
                      <option disabled selected value> -- Select an Option -- </option>
@@ -38,10 +40,14 @@
                      <option value="reds_of_worth">Reds of Worth</option>
                </select>
             </form>
-            </div>
+            </div> -->
          <div class="product_panel" id="product_panel">
          </div>
-            </div>
+        
+        <div class="product_panel" id="selected_product">
+        </div>
+
+
          </div>
         </div>
         <div class="bottom-banner">
@@ -51,6 +57,15 @@
 </html>
 
 <script>
+    window.addEventListener("load", () => {
+        const loader = document.querySelector(".loader");
+
+        loader.classList.add("loader--hidden");
+
+        loader.addEventListener("transitionend", () => {
+            document.body.removeChild(loader);
+        });
+    });
    const productPanel = document.getElementById('product_panel');
    function fetchdata(query) {
       fetch('http://127.0.0.1:5000/api/products')
@@ -117,12 +132,24 @@
       });
    };
    function fetchmodified(query) {
-      var playground = document.getElementById('playground');
-      playground.innerHTML = '';
-      var playground_image = document.createElement('img')
-      playground_image.src = `.static/playground/modified/${query}.png`
-      playground.appendChild(playground_image)
+        if (query == null) {
+            var playground = document.getElementById('playground');
+            playground.innerHTML = '';
+            var playground_image = document.createElement('img')
+            playground_image.src = `/static/playground/upload.png?` + new Date().getTime()
+            playground_image.width = 300;
+            playground.appendChild(playground_image)
+        }
+        else {
+            var playground = document.getElementById('playground');
+            playground.innerHTML = '';
+            var playground_image = document.createElement('img')
+            playground_image.src = `/static/playground/modified/${query}.png?` + new Date().getTime()
+            playground_image.width = 300;
+            playground.appendChild(playground_image)
+        }
    }
+   fetchmodified();
    const searchInput = document.getElementById("searchInput");
    const searchForm = document.getElementById("search-form");
    const submitButton = document.getElementById("submit-button")
@@ -143,6 +170,42 @@
 </script>
 
 <style>
+     .loader {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #333333;
+        transition: opacity 5s, visibility 5s;
+        }
+
+    .loader--hidden {
+        opacity: 0;
+        visibility: hidden;
+    }
+
+    .loader::after {
+        content: "";
+        width: 75px;
+        height: 75px;
+        border: 15px solid #dddddd;
+        border-top-color: #B86E65;
+        border-radius: 50%;
+        animation: loading 1s ease infinite;
+        }
+
+    @keyframes loading {
+    from {
+        transform: rotate(0turn);
+    }
+    to {
+        transform: rotate(1turn);
+    }
+        }
    .playground {
       display: flex;
    }
@@ -158,7 +221,8 @@
        display: flex;
        align-items: center;
        border-radius: 60px;
-       margin: 10px 0 10px 0;
+       margin: -60px 0px 10px 0px;
+       height: 50px;
    }
    .search-bar input {
        background: transparent;
@@ -174,14 +238,14 @@
    }
    .search-bar img {
        width:25px;
-       margin: 15px 0px 0px 15px;
+       margin: 12px 0px 0px 12px;
    }
    .search-bar div {
        border: 0px;
        border-radius: 50%;
-       width: 60px;
-       height: 60px;
-       background: darkslategrey;
+       width: 50px;
+       height: 50px;
+       background: #B86E65;
        cursor: pointer;
    }
    .header {
@@ -211,7 +275,7 @@
        margin: -10px -10px -10px -20px;
    }
    .description h3 {
-       font-size:8px;
+       font-size:9px;
        width: 80%;
        margin: 6px -10px 0px -10px;
    }
@@ -220,12 +284,13 @@
    }
    .product_panel {
        width:1000px;
-       height: 500px;
+       height: 250px;
        overflow: auto;
        background-color:rgba(255,255,255,0.3);
+       margin-top: 20px;
    }
    .product_panel::-webkit-scrollbar {
-           width: 12px;
+           width: 10px;
        }
 
    .product_panel::-webkit-scrollbar-track {
@@ -233,17 +298,17 @@
    }
 
    .product_panel::-webkit-scrollbar-thumb {
-       background: darkslategray;
+       background: #B86E65;
    }
 
    .product_panel::-webkit-scrollbar-thumb:hover {
-       background: #555;
+       background: #B86E65;
    }
    .product_picture {
        margin:2px;
        object-fit:cover;
-       height: 150px;
-       width: 150px;
+       height: 120px;
+       width: 120px;
        mix-blend-mode:multiply;
        cursor: pointer;  
    }
@@ -251,9 +316,9 @@
        display:inline-block;
        outline: .1rem solid lightgrey;
        border-radius: 10px;
-       width: 160px;
-       margin: 20px 0px 0px 50px;
-       padding: 5px;
+       width: 140px;
+       margin: 20px 0px 0px 20px;
+       padding: 10px;
        cursor: pointer;
        background-color:white;
        cursor: pointer;
@@ -283,24 +348,31 @@
        position: relative;
        color: #FFFDD0;
    }
+   .top-banner img {
+    margin-bottom:20px;
+   }
    .top-banner {
        top: 0;
        left: 0;
-       width: 100%;
-       background-color: darkslategrey;
-       padding: 10px 0;
+       background-image: url("https://www.lorealparisusa.com/-/media/project/loreal/brand-sites/oap/americas/us/beauty-magazine/2023/05-may/5-24/nude-pink-lipstick-options/nude-pink-lipstick.jpg");
+       background-repeat: no-repeat;
+       padding: 10px 0px 0px 10px;
        text-align: center;
        position: relative;
+       outline: .2rem solid #B86E65;
+       background-position-y: 30%;
    }
    .bottom-banner {
-       position: fixed;
+       position: relative;
        bottom: 0;
        left: 0;
        width: 100%;
-       background-color: darkslategray;
-       color: white;
-       padding: 10px;
+       background-image: url("https://www.lorealparisusa.com/-/media/project/loreal/brand-sites/oap/americas/us/beauty-magazine/2023/05-may/5-24/nude-pink-lipstick-options/nude-pink-lipstick.jpg");
+       background-repeat: no-repeat;
+       background-position: 25%;
+       padding: 20px 0px 20px 0px;
        text-align: center;
+       outline: .2rem solid #B86E65;
    }
    .logo {
        width: 80px;

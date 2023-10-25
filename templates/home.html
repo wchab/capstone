@@ -32,7 +32,7 @@
                     </a>
                     <div class="intro">
                         <h1>Lipstick Virtual Try-On</h1>
-                        <p>Try on our L'Oreal lipstick shades</p>
+                        <p>Try on our L'Oreal lipstick shades on yourself</p>
                     </div>
                 </div>
             </div>
@@ -62,8 +62,8 @@
     }
 
     .panel {
-        width: 350px;
-        height: 350px;
+        width: 380px;
+        height: 380px;
         border-radius: 3px;
         transition: .5s;
     }
@@ -74,33 +74,34 @@
         background:#EAEAEA;
         background-position:50%;
         align-items:center;
-        background-image: url("https://www.loreal-paris.co.uk/-/media/project/loreal/brand-sites/oap/emea/uk/articles/virtual-beauty-tools/infaillible-24h-matte-cover.jpg");
-        background-repeat: no-repeat;
+        background-image: url("https://www.loreal.com/-/media/project/loreal/brand-sites/corp/master/lcorp/4-brands/consumer-products-division/loreal-paris/hero-oap-opt.jpg?rev=fd0c5cf661954ea99e00ba9fd2bf74ca");
+       background-repeat: no-repeat;
+       background-size:100% 100%;
     }
     .container {
         display: flex;
     }
     .card {
-        height: 450px;
+        height: 440px;
         margin: 80px;
         box-shadow: 5px 5px 20px black;
-        background-color: darkslategray;
+        background-color: #B86E65;
         overflow: hidden;
     }
     .intro{
         border-radius: 3px;
-        width:350px;
+        width:380px;
         position: relative;
-        color: #FFFDD0;
+        color: #FFD0A1;
     }
     h1{
-        margin: 25px;
+        margin: 5px;
         padding:5px;
-        font-size:25px;
+        font-size:22px;
         text-align:center
     }
     p{
-        font-size:15px;
+        font-size:13px;
         visibility:hidden;
         opacity: 0;
         text-align: center;
@@ -126,29 +127,36 @@
     .card:hover img {
         transform: scale(1.1) rotate(-5deg);
     }
-    .top-banner {
-        top: 0;
-        left: 0;
-        width: 100%;
-        background-color: darkslategray;
-        padding: 10px 0;
-        text-align: center;
-        position: relative;
-    }
-    .bottom-banner {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        background-color: darkslategray;
-        color: white;
-        padding: 10px;
-        text-align: center;
-    }
-    .logo {
-        width: 80px;
-        height: 50px;
-        border-radius: 3px;
-        transition: .5s;
-    }
+    .top-banner img {
+    margin-bottom:20px;
+   }
+   .top-banner {
+       top: 0;
+       left: 0;
+       background-image: url("https://www.lorealparisusa.com/-/media/project/loreal/brand-sites/oap/americas/us/beauty-magazine/2023/05-may/5-24/nude-pink-lipstick-options/nude-pink-lipstick.jpg");
+       background-repeat: no-repeat;
+       padding: 10px 0px 0px 10px;
+       text-align: center;
+       position: relative;
+       outline: .2rem solid #B86E65;
+       background-position-y: 30%;
+   }
+   .bottom-banner {
+       position: relative;
+       bottom: 0;
+       left: 0;
+       width: 100%;
+       background-image: url("https://www.lorealparisusa.com/-/media/project/loreal/brand-sites/oap/americas/us/beauty-magazine/2023/05-may/5-24/nude-pink-lipstick-options/nude-pink-lipstick.jpg");
+       background-repeat: no-repeat;
+       background-position: 25%;
+       padding: 20px 0px 20px 0px;
+       text-align: center;
+       outline: .2rem solid #B86E65;
+   }
+   .logo {
+       width: 80px;
+       height: 50px;
+       border-radius: 3px;
+       transition: .5s;
+   }
 </style>

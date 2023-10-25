@@ -4,10 +4,13 @@ import base64
 import time
 import pandas as pd
 import ShadeRecommender
-
+import concurrent.futures
+import asyncio
 from LipColorizer import LipColorizer
+from flask_executor import Executor
 
 app = Flask(__name__, static_url_path='/static')
+executor = Executor(app)
 app.config['ALLOWED_EXTENSIONS'] = {'png', 'jpg', 'jpeg'}
 # PRODUCTS_FILE = 'lipshades.xlsx'
 PRODUCTS_FILE = 'lips_loreal.xlsx'
@@ -17,6 +20,10 @@ uploads_filename = "./static/uploads/jennie.jpg"
 # Function to check if the file extension is allowed
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
+
+@app.route('/', methods=['GET'])
+def redirect_home():
+    return redirect('/home')
 
 @app.route('/api/products', methods=['GET'])
 def get_products():
@@ -44,6 +51,25 @@ def get_products():
 def home():
     return render_template('home.html')
 
+
+def process_image():
+    df = pd.read_excel('./static/lipshades.xlsx')
+    df['hexcode'] = df['hexcode'].map(lambda x: str(x))
+    hexcode_dict = dict(zip(df['product_id'], df['hexcode']))
+    lip_colorizer_model_path = os.path.join("static", "shape_predictor_68_face_landmarks.dat") 
+    uploads_filename = os.path.join("static", "playground", "upload.png")
+    df = pd.read_excel('./static/lipshades.xlsx')
+    df['hexcode'] = df['hexcode'].map(lambda x: str(x))
+    hexcode_dict = dict(zip(df['product_id'], df['hexcode']))
+    lip_colorizer_model_path = os.path.join("static", "shape_predictor_68_face_landmarks.dat") 
+    uploads_filename = os.path.join("static", "playground", "upload.png")
+    for key in hexcode_dict.keys():
+        destination_filename = os.path.join("static", "playground", "modified", f"{key}.png")
+        lipcolorizer = LipColorizer(lip_colorizer_model_path, uploads_filename)
+        image = lipcolorizer.colorize_lips(f'#{hexcode_dict[key]}')
+        lipcolorizer.saveImage(image, destination_filename)
+        print(f"{key}.png processed")
+
 @app.route('/virtualtryon', methods=['GET', 'POST'])
 def virtualtryon():
     if request.files:
@@ -56,19 +82,19 @@ def virtualtryon():
             return redirect(request.url)
 
         if file and allowed_file(file.filename):
-            df = pd.read_excel('./static/lipshades.xlsx')
-            df['hexcode'] = df['hexcode'].map(lambda x: str(x))
-            hexcode_dict = dict(zip(df['product_id'], df['hexcode']))
-            lip_colorizer_model_path = os.path.join("static", "shape_predictor_68_face_landmarks.dat") 
-            uploads_filename = os.path.join("static", "playground", file.filename)
-            
+            uploads_filename = os.path.join("static", "playground", "upload.png")
             file.save(uploads_filename)
-            for key, value in hexcode_dict.items():
-                destination_filename = os.path.join("static", "playground", "modified", f"{key}.png")
-                lipcolorizer = LipColorizer(lip_colorizer_model_path, uploads_filename)
-                image = lipcolorizer.colorize_lips(f'#{value}')
-                lipcolorizer.saveImage(image, destination_filename)
-        return render_template('virtualtryon.html')
+            executor.submit(process_image)
+            time.sleep(2)
+            return render_template('virtualtryon.html')
+
+            # for key, value in hexcode_dict.items():
+            #     destination_filename = os.path.join("static", "playground", "modified", f"{key}.png")
+            #     lipcolorizer = LipColorizer(lip_colorizer_model_path, uploads_filename)
+            #     image = lipcolorizer.colorize_lips(f'#{value}')
+            #     lipcolorizer.saveImage(image, destination_filename)
+
+        
     else:
         return render_template('virtualtryon.html')
 
