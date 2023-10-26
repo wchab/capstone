@@ -128,19 +128,8 @@ def get_product_info(product_hexcode):
 #         print(f"Error loading or searching in the Excel file: {e}")
 #         return None  
 
-
-# @app.route('/shadematched/FFC0CB')
 @app.route('/shadematched')
 def match_product():
-    # product_hexcode = "#FFC0CB"
-
-    # product_name, product_price, product_id = get_product_info(product_hexcode)
-    # product_name = get_product_name(product_hexcode)
-    # product_colour = get_product_colour(product_hexcode)
-    # product_id = get_product_id(product_hexcode)
-
-    # return render_template('shadematched.html', product_name=product_name, product_colour=product_colour, product_id=product_id)
-
     product_info = userhandler.shaderecommender.product_dic
     print(product_info)
     product_name = product_info["name"]
@@ -151,9 +140,9 @@ def match_product():
     product_hexcode = product_info["hex_colour"][1:]
 
     if product_id is not None:
-        # Assuming the product ID is the name of the image file
-        image_filename = f"{product_id}.png"  # Adjust the file extension as needed
-        # image_path = os.path.join(IMAGE_FOLDER, image_filename)
+
+        image_filename = f"{product_id}.png" 
+
         image_path = os.path.join('static', IMAGE_FOLDER, image_filename)
 
         print(f"Product Name: {product_name}")
@@ -176,7 +165,7 @@ def match_product():
 
     else:
         print("Product information not found")
-        return render_template('nomatch.html')  # Or handle the case where product information is not found
+        return render_template('nomatch.html') 
 
 @app.route('/nomatch')
 def nomatch():
@@ -194,8 +183,8 @@ def lip_validation():
             return redirect(request.url)
 
         if file and allowed_file(file.filename):
-            userhandler.set_uploaded_lipshadefinder_filename(file.filename)
-            file.save(userhandler.get_uploaded_lipshadefinder_filename_path())
+            file.save(userhandler.get_uploaded_lipshadefinder_filename_path(file.filename))
+            userhandler.set_uploaded_lipshadefinder_filename()
             mask_directory = userhandler.shaderecommender.save_predicted_mask()
             return render_template('lipvalidation.html', image_path=mask_directory)
     else:

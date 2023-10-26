@@ -13,7 +13,7 @@ class ShadeRecommender():
         self.segmodel = torch.load('./static/best_model.pth')
         self.output = self.predict_mask()
         self.binary_mask = self.store_binary_mask()
-        self.product_df = pd.read_excel('lipshades.xlsx')
+        self.product_df = pd.read_excel('./static/lipshades.xlsx')
 
         
     def predict_mask(self):
@@ -174,10 +174,12 @@ class ShadeRecommender():
 
         # Desired directory path
         directory_path = "./static/user_generated_masks"
-
+        playground_path = os.path.join('static', 'playground', 'lipshadefinder', f'processed_{filename}')
         # Create the new filepath
         mask_filepath = os.path.join(directory_path, filename)
         
         cv2.imwrite(mask_filepath, overlay_image)
-        return mask_filepath
+        cv2.imwrite(playground_path, overlay_image)
+        return os.path.join('lipshadefinder', f'processed_{filename}')
+
 
