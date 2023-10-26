@@ -80,10 +80,10 @@ class ShadeRecommender():
         # Assuming output is the tensor
         output = output[0, 0].detach().cpu().numpy()  # Extract the single channel and convert to a NumPy array
         
-        # Visualize the predicted mask
-        plt.imshow(output, cmap='jet', vmin=0, vmax=1)  # Use an appropriate colormap, vmin, and vmax
-#         visualization_image_path = 'path_to_save_visualization.png'  # Specify the path and filename
-#         plt.savefig(visualization_image_path)
+#         # Visualize the predicted mask
+#         plt.imshow(output, cmap='jet', vmin=0, vmax=1)  # Use an appropriate colormap, vmin, and vmax
+# #         visualization_image_path = 'path_to_save_visualization.png'  # Specify the path and filename
+# #         plt.savefig(visualization_image_path)
 
 
         return output
@@ -209,7 +209,8 @@ class ShadeRecommender():
 
         # Create the new filepath
         mask_filepath = os.path.join(directory_path, filename)
-        
+        playground_path = os.path.join('static', 'playground', 'lipshadefinder', f'processed_{filename}')
         cv2.imwrite(mask_filepath, overlay_image)
-        return mask_filepath
-    
+        cv2.imwrite(playground_path, overlay_image)
+        return os.path.join('lipshadefinder', f'processed_{filename}')
+

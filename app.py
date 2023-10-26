@@ -3,19 +3,21 @@ import os
 import base64
 import time
 import pandas as pd
-import ShadeRecommender
 import concurrent.futures
 import asyncio
 from LipColorizer import LipColorizer
 from flask_executor import Executor
+from UserHandler import UserHandler
+from ShadeRecommender import ShadeRecommender
 
 app = Flask(__name__, static_url_path='/static')
 executor = Executor(app)
 app.config['ALLOWED_EXTENSIONS'] = {'png', 'jpg', 'jpeg'}
-# PRODUCTS_FILE = 'lipshades.xlsx'
 PRODUCTS_FILE = 'lips_loreal.xlsx'
 IMAGE_FOLDER = 'product_pictures'
-uploads_filename = "./static/uploads/jennie.jpg"
+
+#initialise userhandler class as a centralised platform for front, back and user experience
+userhandler = UserHandler()
 
 # Function to check if the file extension is allowed
 def allowed_file(filename):
@@ -85,31 +87,17 @@ def virtualtryon():
             uploads_filename = os.path.join("static", "playground", "upload.png")
             file.save(uploads_filename)
             executor.submit(process_image)
-            time.sleep(2)
             return render_template('virtualtryon.html')
-
-            # for key, value in hexcode_dict.items():
-            #     destination_filename = os.path.join("static", "playground", "modified", f"{key}.png")
-            #     lipcolorizer = LipColorizer(lip_colorizer_model_path, uploads_filename)
-            #     image = lipcolorizer.colorize_lips(f'#{value}')
-            #     lipcolorizer.saveImage(image, destination_filename)
-
-        
     else:
         return render_template('virtualtryon.html')
 
+@app.route('/upload/virtualtryon', methods=['GET', 'POST'])
+def upload_virtualtryon():
+    return render_template('upload_virtualtryon.html')
 
-@app.route('/upload', methods=['GET', 'POST'])
-def upload():
-    return render_template('upload.html')
-
-@app.route('/uploads/<filename>')
-def uploaded_file(filename):
-    return f'<h1>Uploaded Image:</h1><img src="{url_for("static", filename="uploads/" + filename)}">'
-
-# @app.route('/shadematched')
-# def shadematched():
-#     return render_template('shadematched.html')
+@app.route('/upload/lipshadefinder', methods=['GET', 'POST'])
+def upload_lipshadefinder():
+    return render_template('upload_lipshadefinder.html')
 
 def get_product_info(product_hexcode):
     try:
@@ -162,7 +150,7 @@ def match_product():
 
     # return render_template('shadematched.html', product_name=product_name, product_colour=product_colour, product_id=product_id)
 
-    product_info = ShadeRecommender.ShadeRecommender(uploads_filename).product_dic
+    product_info = userhandler.shaderecommender.product_dic
     print(product_info)
     product_name = product_info["name"]
     product_price = product_info["price"]
@@ -203,16 +191,24 @@ def match_product():
 def nomatch():
     return render_template('nomatch.html')
 
-@app.route('/lipvalidation')
+@app.route('/lipvalidation', methods=['GET', 'POST'])
 def lip_validation():
-    mask_directory = ShadeRecommender.ShadeRecommender(uploads_filename).save_predicted_mask()
+    if request.files:
+        if 'lipshade_file' not in request.files:
+            return redirect(request.url)
 
-    with open(mask_directory, "rb") as product_image_file:
-        product_image_data = base64.b64encode(product_image_file.read()).decode("utf-8")
+        file = request.files['lipshade_file']
 
-    print(f"Image Path: {mask_directory}")
+        if file.filename == '':
+            return redirect(request.url)
 
-    return render_template('lipvalidation.html', product_image_data=product_image_data)
+        if file and allowed_file(file.filename):
+            userhandler.set_uploaded_lipshadefinder_filename(file.filename)
+            file.save(userhandler.get_uploaded_lipshadefinder_filename_path())
+            mask_directory = userhandler.shaderecommender.save_predicted_mask()
+            return render_template('lipvalidation.html', image_path=mask_directory)
+    else:
+        return render_template('upload_lipshadefinder.html')
 
 if __name__ == '__main__':
     app.run(debug=True)

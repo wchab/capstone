@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Image Upload</title>
+</head>
+<body>
+    <div class="top-banner">
+        <a href= "/home">
+            <img class=logo src="https://logos-world.net/wp-content/uploads/2020/04/LOreal-Logo.png">
+        </a>
+    </div>
+    <div class="content">
+        <div class="loader"></div>
+        <div class="drop">
+            <label for="input-file" id="drop-area">
+                <form method="POST" action="/lipvalidation" enctype="multipart/form-data">
+                    <input type="file" accept="image/*" id="lipshade_file", name="lipshade_file"> 
+                    <input type="submit" value=" Upload ">
+                </form>
+    
+                <div id="img-view">
+                    <img class=icon src="https://icon-library.com/images/drag-and-drop-icon/drag-and-drop-icon-8.jpg">
+                    <p> Drag and drop or click here to upload image</p>
+                    <span>Upload any images from desktop</span>
+                </div>
+            </label>
+        </div>        
+    </div>
+    <div class="bottom-banner">
+    </div>
+</body>
+</html>
+
+<script> 
+    window.addEventListener("load", () => {
+        const loader = document.querySelector(".loader");
+
+        loader.classList.add("loader--hidden");
+
+        loader.addEventListener("transitionend", () => {
+            document.body.removeChild(loader);
+        });
+    });
+    const dropArea = document.getElementById("drop-area");
+    const inputFile = document.getElementById("lipshade_file");
+    const imageView = document.getElementById("img-view");
+
+    inputFile.addEventListener("change", uploadImage);
+
+    function uploadImage() {
+        let imgLink = URL.createObjectURL(inputFile.files[0]);
+        imageView.style.backgroundImage = `url(${imgLink})`;
+        imageView.style.backgroundRepeat = `no-repeat`;
+        imageView.style.backgroundPosition = `center`;
+        imageView.style.backgroundSize = `500px`;
+        imageView.textContent = "";
+        imageView.style.border = 0;
+
+    }
+    dropArea.addEventListener("dragover", function(e){
+        e.preventDefault();
+    });
+    dropArea.addEventListener("drop", function(e){
+        e.preventDefault();
+        inputFile.files = e.dataTransfer.files;
+        uploadImage()
+    });
+</script>
+
+<style>
+     .loader {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #333333;
+        transition: opacity 1s, visibility 1s;
+        }
+
+    .loader--hidden {
+        opacity: 0;
+        visibility: hidden;
+    }
+
+    .loader::after {
+        content: "";
+        width: 75px;
+        height: 75px;
+        border: 15px solid #dddddd;
+        border-top-color: #B86E65;
+        border-radius: 50%;
+        animation: loading 1s ease infinite;
+        }
+
+    @keyframes loading {
+    from {
+        transform: rotate(0turn);
+    }
+    to {
+        transform: rotate(1turn);
+    }
+        }
+
+    * {
+        margin: 0px;
+        padding: 0px;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif
+    }
+    .content {
+        background-image: url("https://www.loreal.com/-/media/project/loreal/brand-sites/corp/master/lcorp/4-brands/consumer-products-division/loreal-paris/hero-oap-opt.jpg?rev=fd0c5cf661954ea99e00ba9fd2bf74ca");
+        background-repeat: no-repeat;
+        background-size:100% 100%;
+    }
+    p{
+        font-size:15px;
+        text-align: center;
+        margin: 10px;
+    }
+    .icon {
+        padding-top: 80px;
+    }
+    .drop {
+        display: flex;
+        justify-content: center;
+        height: 90vh;
+        background-color:rgba(255,255,255,0.0001);
+        align-items:center;
+    }
+    #drop-area {
+        width: 800px;
+        height: 450px;
+        padding: 30px;
+        background: #B86E65;
+        text-align: center;
+        border-radius: 20px;
+    }
+    #img-view {
+        margin-top: 50px;
+        height: 350px;
+        border-radius: 20px;
+        border: 2px dashed grey;
+        background: whitesmoke;
+    }
+    #img-view img {
+        width: 100px;
+        margin-top: 25px;
+        background-repeat: no-repeat;
+    }
+    #img-view span {
+        display:block;
+        font-size: 12px;
+        color: #777;
+        margin-top: 15px;
+        background-size: cover;
+    }
+
+    .top-banner img {
+    margin-bottom:20px;
+   }
+   .top-banner {
+       top: 0;
+       left: 0;
+       background-image: url("https://www.lorealparisusa.com/-/media/project/loreal/brand-sites/oap/americas/us/beauty-magazine/2023/05-may/5-24/nude-pink-lipstick-options/nude-pink-lipstick.jpg");
+       background-repeat: no-repeat;
+       padding: 10px 0px 0px 10px;
+       text-align: center;
+       position: relative;
+       outline: .2rem solid #B86E65;
+       background-position-y: 30%;
+   }
+   .bottom-banner {
+       position: relative;
+       bottom: 0;
+       left: 0;
+       width: 100%;
+       background-image: url("https://www.lorealparisusa.com/-/media/project/loreal/brand-sites/oap/americas/us/beauty-magazine/2023/05-may/5-24/nude-pink-lipstick-options/nude-pink-lipstick.jpg");
+       background-repeat: no-repeat;
+       background-position: 25%;
+       padding: 20px 0px 20px 0px;
+       text-align: center;
+       outline: .2rem solid #B86E65;
+   }
+   .logo {
+       width: 80px;
+       height: 50px;
+       border-radius: 3px;
+       transition: .5s;
+   }
+</style>
