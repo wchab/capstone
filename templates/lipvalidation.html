@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>L'Oreal - Match Found</title>
+        <title>L'Oreal - Lip Validation</title>
     </head>
     <body>
         <div class="top-banner">
@@ -10,27 +10,13 @@
             </a>
         </div>
         <div class="content">
+            <div class="loader"></div>
             <div class="container">
-                <div class="title">Great, we found a matching product for you!</div>
-                <br><br>
-                
-                {% if product_image_data %}
-                    <img src="data:image/png;base64, {{ product_image_data }}" alt="Product Image">
-                {% else %}
-                    <p>No image available for this product</p>
-                {% endif %}
-
-                <div class="desc">Product Name: {{ product_name }}
-                    <br>
-                    Price: ${{ product_price }}
-                </div>
-                <br>
+                <h1 class="error-title" >Please check if the lips have been identified correctly.</h1>
+                <img src="{{ url_for('static', filename='playground/' + image_path)}}">
                 <div class="button-container">
-                    <button class="try-button" onclick="window.location.href = '/virtualtryon'">Try Product Virtually</button>
-                    <button class="moreinfo-button" onclick=" window.open('{{ product_link }}', '_blank')">More Info</button>
-                    <br>
-                    <button class="reupload-button" onclick="window.location.href = '/upload'">Reupload Picture</button>
-                    <!-- <button class="home-button" onclick="window.location.href = '/'">Home</button> -->
+                    <button class="yes-button" onclick="window.location.href = '/shadematched'">Yes (Continue Matching)</button>
+                    <button class="no-button" onclick="window.location.href = '/home'">No (Back To Home)</button>
                 </div>
             </div>
         </div>
@@ -40,7 +26,55 @@
     </body>
 </html>
 
+<script>
+    window.addEventListener("load", () => {
+        const loader = document.querySelector(".loader");
+
+        loader.classList.add("loader--hidden");
+
+        loader.addEventListener("transitionend", () => {
+            document.body.removeChild(loader);
+        });
+    });
+</script>
 <style>
+     .loader {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #333333;
+        transition: opacity 1s, visibility 1s;
+        }
+
+    .loader--hidden {
+        opacity: 0;
+        visibility: hidden;
+    }
+
+    .loader::after {
+        content: "";
+        width: 75px;
+        height: 75px;
+        border: 15px solid #dddddd;
+        border-top-color: #B86E65;
+        border-radius: 50%;
+        animation: loading 1s ease infinite;
+        }
+
+    @keyframes loading {
+    from {
+        transform: rotate(0turn);
+    }
+    to {
+        transform: rotate(1turn);
+    }
+        }
+
     *{
         margin: 0px;
         padding: 0px;
@@ -67,18 +101,17 @@
         align-items: center;
         justify-content: center;
     }
-    .title {
+    .container img {
+        width: 300px;
+        margin-top: 20px;
+    }
+    .error-title {
         text-align: center;
         font-weight: bold;
-        font-size: 50px;
         display: block;
         color: whitesmoke;
-    }
-    .desc {
-        text-align: center;
-        display: block;
-        color: whitesmoke;
-        font-size: 20px;
+        font-size:30px;
+        margin-bottom: 20px;
     }
     .button-container {
         text-align: center; /* Center the buttons */
@@ -97,17 +130,7 @@
     button:hover {
         background-color: lightslategray;
     }
-    img {
-        display: block;
-        margin: 0 auto;
-    }
-    .card {
-        height: 450px;
-        margin: 80px;
-        box-shadow: 5px 5px 20px black;
-        background-color: darkslategray;
-        overflow: hidden;
-    }
+
     p{
         font-size:15px;
         visibility:hidden;
@@ -118,7 +141,7 @@
     span {
         font-weight: bold;
     }
-    .top-banner {
+   .top-banner {
        top: 0;
        left: 0;
        background-image: url("https://www.lorealparisusa.com/-/media/project/loreal/brand-sites/oap/americas/us/beauty-magazine/2023/05-may/5-24/nude-pink-lipstick-options/nude-pink-lipstick.jpg");
@@ -147,4 +170,8 @@
        border-radius: 3px;
        transition: .5s;
    }
+    img {
+        display: block;
+        margin: 0 auto;
+    }
 </style>
