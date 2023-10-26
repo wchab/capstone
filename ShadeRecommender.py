@@ -89,7 +89,9 @@ class ShadeRecommender():
     
     def recommend_products(self):
         '''
-
+        front-end to run this to obtain list of recommended product ids
+        first id would be the main product being recommended
+        the remaining ids are what the user might like 
         '''
         try:
             original_image = cv2.imread(self.img_path) 
