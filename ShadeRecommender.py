@@ -129,7 +129,7 @@ class ShadeRecommender():
                 
                 return np.linalg.norm(color1 - color2)
             
-            recommeded_product_ids = []
+            recommended_product_ids = []
             for colour in target_colors:
                 dist_lst = []
                 for i in range(len(hex_lst)):
@@ -139,9 +139,9 @@ class ShadeRecommender():
                 
                 product_idx = dist_lst.index(min(dist_lst))
                 product_id = self.product_df.loc[product_idx, "product_id"]
-                if product_id not in recommeded_product_ids:
-                    recommeded_product_ids.append(product_id)
-            return recommeded_product_ids          
+                if product_id not in recommended_product_ids:
+                    recommended_product_ids.append(product_id)
+            return recommended_product_ids          
         
         except Exception as e:
             print(" Lips were not detected! Please upload another image! I will learn from this mistake!")
