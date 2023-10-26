@@ -1,6 +1,7 @@
 import os
 import pandas as pd
 from ShadeRecommender import ShadeRecommender
+from LipColorizer import LipColorizer
 
 class UserHandler():
     def __init__(self):
@@ -11,15 +12,28 @@ class UserHandler():
         self.uploaded_lipshadefinder_filename = None
         self.uploaded_virtualtryon_filename = None
         self.shaderecommender = None
+        self.lipcolorizer = None
+        self.loreal_df = pd.read_excel('./static/lipshades.xlsx')
         print("========= Starting UserHandler =========")
 
-    def get_uploaded_lipshadefinder_filename_path(self):
+    def get_uploaded_lipshadefinder_filename_path(self, filename):
+        self.uploaded_lipshadefinder_filename = filename
         return os.path.join(self.lipshadefinder_playground_path, self.uploaded_lipshadefinder_filename)
     
-    def set_uploaded_lipshadefinder_filename(self, filename):
-        self.uploaded_lipshadefinder_filename = filename
-        self.shaderecommender = ShadeRecommender(self.get_uploaded_lipshadefinder_filename_path())
-        print(f"Initialised ShadeRecommender on {filename}")
+    def set_uploaded_lipshadefinder_filename(self):
+        self.shaderecommender = ShadeRecommender(self.get_uploaded_lipshadefinder_filename_path(self.uploaded_lipshadefinder_filename))
+        print(f"Initialised ShadeRecommender on {self.uploaded_lipshadefinder_filename}")
         pass
-        
+    
+
+
+    #=========== Virtual Try On ===========
+    def get_uploaded_virtualtryon_filename_path(self, filename):
+        self.uploaded_virtualtryon_filename = filename
+        return os.path.join(self.virtualtryon_playground_path, self.uploaded_virtualtryon_filename)
+    
+    def set_uploaded_virtualtryon_filename(self):
+        self.lipcolorizer = LipColorizer(self.get_uploaded_virtualtryon_filename_path(self.uploaded_virtualtryon_filename))
+        print(f"Initialised LipColorizer on {self.uploaded_virtualtryon_filename}")
+        pass
     

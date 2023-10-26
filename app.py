@@ -52,50 +52,41 @@ def get_products():
 @app.route('/home')
 def home():
     return render_template('home.html')
-
-
-def process_image():
+    
+def process_image(filename):
     df = pd.read_excel('./static/lipshades.xlsx')
     df['hexcode'] = df['hexcode'].map(lambda x: str(x))
     hexcode_dict = dict(zip(df['product_id'], df['hexcode']))
-    lip_colorizer_model_path = os.path.join("static", "shape_predictor_68_face_landmarks.dat") 
-    uploads_filename = os.path.join("static", "playground", "upload.png")
-    df = pd.read_excel('./static/lipshades.xlsx')
-    df['hexcode'] = df['hexcode'].map(lambda x: str(x))
-    hexcode_dict = dict(zip(df['product_id'], df['hexcode']))
-    lip_colorizer_model_path = os.path.join("static", "shape_predictor_68_face_landmarks.dat") 
-    uploads_filename = os.path.join("static", "playground", "upload.png")
     for key in hexcode_dict.keys():
-        destination_filename = os.path.join("static", "playground", "modified", f"{key}.png")
-        lipcolorizer = LipColorizer(lip_colorizer_model_path, uploads_filename)
-        image = lipcolorizer.colorize_lips(f'#{hexcode_dict[key]}')
-        lipcolorizer.saveImage(image, destination_filename)
-        print(f"{key}.png processed")
+        destination_filename = os.path.join("static", "playground", "virtualtryon", "modified", f"{key}.png")
+        image = userhandler.lipcolorizer.colorize_lips(f'#{hexcode_dict[key]}')
+        userhandler.lipcolorizer.saveImage(image, destination_filename)
+        print(f"{key} processed")
 
 @app.route('/virtualtryon', methods=['GET', 'POST'])
 def virtualtryon():
     if request.files:
-        if 'file' not in request.files:
+        if 'virtualtryon_file' not in request.files:
             return redirect(request.url)
 
-        file = request.files['file']
+        file = request.files['virtualtryon_file']
 
         if file.filename == '':
             return redirect(request.url)
 
         if file and allowed_file(file.filename):
-            uploads_filename = os.path.join("static", "playground", "upload.png")
-            file.save(uploads_filename)
-            executor.submit(process_image)
+            file.save(userhandler.get_uploaded_virtualtryon_filename_path('upload.png'))
+            userhandler.set_uploaded_virtualtryon_filename()
+            executor.submit(process_image(file.filename))
             return render_template('virtualtryon.html')
     else:
         return render_template('virtualtryon.html')
 
-@app.route('/upload/virtualtryon', methods=['GET', 'POST'])
+@app.route('/upload_virtualtryon', methods=['GET', 'POST'])
 def upload_virtualtryon():
     return render_template('upload_virtualtryon.html')
 
-@app.route('/upload/lipshadefinder', methods=['GET', 'POST'])
+@app.route('/upload_lipshadefinder', methods=['GET', 'POST'])
 def upload_lipshadefinder():
     return render_template('upload_lipshadefinder.html')
 
@@ -137,19 +128,8 @@ def get_product_info(product_hexcode):
 #         print(f"Error loading or searching in the Excel file: {e}")
 #         return None  
 
-
-# @app.route('/shadematched/FFC0CB')
 @app.route('/shadematched')
 def match_product():
-    # product_hexcode = "#FFC0CB"
-
-    # product_name, product_price, product_id = get_product_info(product_hexcode)
-    # product_name = get_product_name(product_hexcode)
-    # product_colour = get_product_colour(product_hexcode)
-    # product_id = get_product_id(product_hexcode)
-
-    # return render_template('shadematched.html', product_name=product_name, product_colour=product_colour, product_id=product_id)
-
     product_info = userhandler.shaderecommender.product_dic
     print(product_info)
     product_name = product_info["name"]
@@ -160,9 +140,9 @@ def match_product():
     product_hexcode = product_info["hex_colour"][1:]
 
     if product_id is not None:
-        # Assuming the product ID is the name of the image file
-        image_filename = f"{product_id}.png"  # Adjust the file extension as needed
-        # image_path = os.path.join(IMAGE_FOLDER, image_filename)
+
+        image_filename = f"{product_id}.png" 
+
         image_path = os.path.join('static', IMAGE_FOLDER, image_filename)
 
         print(f"Product Name: {product_name}")
@@ -185,7 +165,7 @@ def match_product():
 
     else:
         print("Product information not found")
-        return render_template('nomatch.html')  # Or handle the case where product information is not found
+        return render_template('nomatch.html') 
 
 @app.route('/nomatch')
 def nomatch():
@@ -203,8 +183,8 @@ def lip_validation():
             return redirect(request.url)
 
         if file and allowed_file(file.filename):
-            userhandler.set_uploaded_lipshadefinder_filename(file.filename)
-            file.save(userhandler.get_uploaded_lipshadefinder_filename_path())
+            file.save(userhandler.get_uploaded_lipshadefinder_filename_path(file.filename))
+            userhandler.set_uploaded_lipshadefinder_filename()
             mask_directory = userhandler.shaderecommender.save_predicted_mask()
             return render_template('lipvalidation.html', image_path=mask_directory)
     else:

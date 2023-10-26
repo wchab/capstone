@@ -5,9 +5,9 @@ import os
 from PIL import ImageColor
 
 class LipColorizer:
-    def __init__(self, shape_predictor_path, image_path):
+    def __init__(self, image_path):
         self.detector = dlib.get_frontal_face_detector()
-        self.predictor = dlib.shape_predictor(shape_predictor_path)
+        self.predictor = dlib.shape_predictor(os.path.join("static", "shape_predictor_68_face_landmarks.dat"))
         self.image = cv2.imread(image_path)
         self.image = cv2.resize(self.image, (0, 0), None, 1, 1)
         self.imgOriginal = self.image.copy()
@@ -58,14 +58,3 @@ class LipColorizer:
         image_name, image_ext = os.path.splitext(image_path)
         new_name = image_name + image_ext
         cv2.imwrite(new_name, colored_image)
-
-if __name__ == "__main__":
-    shape_predictor_path = "./static/shape_predictor_68_face_landmarks.dat"
-    image_path = "./static/playground/jennie.jpg"
-
-    lip_colorizer = LipColorizer(shape_predictor_path, image_path)
-    colored_image = lip_colorizer.colorize_lips('#781C44')
-
-    cv2.imshow("Colored", colored_image)
-    lip_colorizer.saveImage(colored_image, image_path)
-    cv2.waitKey(0)
