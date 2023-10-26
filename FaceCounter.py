@@ -40,7 +40,7 @@ class FaceCounter():
         labelled_img_path = os.path.join(directory_path, filename)
 
         cv2.imwrite(labelled_img_path, image)        
-
+        return labelled_img_path
 # test=FaceCounter("hehe.jpeg")
 # print(test.num_faces_detected)
 # test.save_labelled_faces_img()
