@@ -47,7 +47,19 @@ def get_products():
                                                     'hexcode': hexcode_dict[product_number],
                                                     'product_line': product_line_dict[product_number],
                                                     'wordsearch': search_dict[product_number]}
-    return jsonify(product_line_dict)
+    recommended_products = request.args.get('recommended_products')
+    if recommended_products:
+        recommended_line_dict = {}
+        try: 
+            recommended_products = userhandler.shaderecommender.recommend_products()
+            for product in recommended_products:
+                recommended_line_dict[product] = product_line_dict[product]
+            return jsonify(recommended_line_dict)
+        except:
+            return {}
+            
+    else:
+        return jsonify(product_line_dict)
 
 @app.route('/home')
 def home():
@@ -130,43 +142,12 @@ def get_product_info(product_hexcode):
 
 @app.route('/shadematched')
 def match_product():
-    product_info = userhandler.shaderecommender.product_dic
-    print(product_info)
-    product_name = product_info["name"]
-    product_price = product_info["price"]
-    product_price_str = f"{product_price:.2f}"
-    product_id = product_info["prod_id"]
-    product_link = "https://www.google.com/"
-    product_hexcode = product_info["hex_colour"][1:]
-
-    if product_id is not None:
-
-        image_filename = f"{product_id}.png" 
-
-        image_path = os.path.join('static', IMAGE_FOLDER, image_filename)
-
-        print(f"Product Name: {product_name}")
-        print(f"Product Price: {product_price_str}")
-        print(f"Product ID: {product_id}")
-        print(f"Product hexcode: {product_hexcode}")
-        print(f"Image File Name: {image_filename}")
-        print(f"Image Path: {image_path}")
-
-        if os.path.exists(image_path):
-            # Read the image and convert it to base64 for passing to the HTML template
-            with open(image_path, "rb") as product_image_file:
-                product_image_data = base64.b64encode(product_image_file.read()).decode("utf-8")
-                print("Image data is available")
-
-            return render_template('shadematched.html', product_name=product_name, product_price=product_price_str, product_id=product_id, product_image_data=product_image_data, product_link = product_link)
-        else:
-            print("Image file not found")
-            return render_template('shadematched.html', product_name=product_name, product_price=product_price_str, product_id=product_id, product_image_data=None, product_link = product_link)  # Or handle the case where the image file is not found
-
-    else:
-        print("Product information not found")
-        return render_template('nomatch.html') 
-
+    try:
+        recommended_products = userhandler.shaderecommender.recommend_products()
+        return render_template('shadematched.html', recommended_products=recommended_products)
+    except:
+        return render_template('shadematched.html')
+ 
 @app.route('/nomatch')
 def nomatch():
     return render_template('nomatch.html')

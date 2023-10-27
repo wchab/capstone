@@ -10,27 +10,14 @@
             </a>
         </div>
         <div class="content">
+            <div class="loader"></div>
             <div class="container">
-                <div class="title">Great, we found a matching product for you!</div>
-                <br><br>
-                
-                {% if product_image_data %}
-                    <img src="data:image/png;base64, {{ product_image_data }}" alt="Product Image">
-                {% else %}
-                    <p>No image available for this product</p>
-                {% endif %}
-
-                <div class="desc">Product Name: {{ product_name }}
-                    <br>
-                    Price: ${{ product_price }}
-                </div>
-                <br>
+                <div class="product_panel" id="product_panel"></div>
                 <div class="button-container">
-                    <button class="try-button" onclick="window.location.href = '/virtualtryon'">Try Product Virtually</button>
-                    <button class="moreinfo-button" onclick=" window.open('{{ product_link }}', '_blank')">More Info</button>
-                    <br>
-                    <button class="reupload-button" onclick="window.location.href = '/upload'">Reupload Picture</button>
-                    <!-- <button class="home-button" onclick="window.location.href = '/'">Home</button> -->
+                    <button class="yes-button" onclick="window.location.href = '/upload_virtualtryon'">Virtual Try-On</button>
+                </div>
+                <div class="button-container">    
+                    <button class="no-button" onclick="window.location.href = '/upload_lipshadefinder'">Upload Another Image</button>
                 </div>
             </div>
         </div>
@@ -40,7 +27,153 @@
     </body>
 </html>
 
+<script>
+    window.addEventListener("load", () => {
+        const loader = document.querySelector(".loader");
+
+        loader.classList.add("loader--hidden");
+
+        loader.addEventListener("transitionend", () => {
+            document.body.removeChild(loader);
+        });
+    });
+    const productPanel = document.getElementById('product_panel');
+    function fetchdata() {
+        fetch('http://127.0.0.1:5000/api/products?recommended_products="true"')
+            .then((response) => response.json())
+            .then((data) => {
+                for (const key in data) {
+                    const item = data[key];
+                    const products = document.createElement('div');
+                    products.className = 'products';
+                    products.id = 'products';
+                    products.value = key;
+
+                    const products_img = document.createElement('img');
+                    products_img.className = 'product_picture';
+                    products_img.src = `static/images/${item['product_line']}/${key}.png`;
+
+                    products.appendChild(products_img);
+                    const desc = document.createElement('div');
+                    desc.className = 'description';
+                    const desc_img = document.createElement('img');
+                    desc_img.className = 'colours';
+                    desc_img.src = `static/images/colours/${key}.png`;
+                    const desc_label = document.createElement('div');
+                    const desc_label_content = document.createElement('h3');
+                    desc_label_content.className = 'description_label';
+                    desc_label_content.textContent = `${item['color']}`;
+                    desc_label.appendChild(desc_label_content);
+                    desc.appendChild(desc_img);
+                    desc.appendChild(desc_label);
+                    products.appendChild(desc);
+                    productPanel.appendChild(products);
+
+
+                };
+            });
+        }
+    fetchdata();
+
+</script>
+
 <style>
+     .button-container {
+        text-align: center; /* Center the buttons */
+    }
+    button {
+        display: inline-block;
+        margin: 20px 10px auto; 
+        padding: 10px; 
+        background-color: grey; 
+        color: whitesmoke; 
+        border: none;
+        border-radius: 5px; 
+        cursor: pointer;
+        font-size: 15px;
+    }
+    button:hover {
+        background-color: lightslategray;
+    }
+    .loader {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #333333;
+        transition: opacity 1s, visibility 1s;
+        }
+
+    .loader--hidden {
+        opacity: 0;
+        visibility: hidden;
+    }
+
+    .loader::after {
+        content: "";
+        width: 75px;
+        height: 75px;
+        border: 15px solid #dddddd;
+        border-top-color: #B86E65;
+        border-radius: 50%;
+        animation: loading 1s ease infinite;
+        }
+
+    @keyframes loading {
+        from {
+            transform: rotate(0turn);
+        }
+        to {
+            transform: rotate(1turn);
+        }
+    }
+    .description {
+       display: flex;
+       align-content: center;
+   }
+   .description img {
+       width: 60%;
+       margin: -10px -10px -10px -20px;
+   }
+   .description h3 {
+       font-size:9px;
+       width: 100%;
+       margin: 8px 20px 0px -10px;
+   }
+   .colours {
+       mix-blend-mode:multiply;
+   }
+     .product_panel {
+       width:800px;
+       height: 220px;
+       overflow: auto;
+       background-color:rgba(255,255,255,0.3);
+   }
+   .products {
+       display:inline-block;
+       outline: .1rem solid lightgrey;
+       border-radius: 10px;
+       width: 140px;
+       height: 155px;
+       margin: 20px 18px 0px 20px;
+       padding: 10px;
+       cursor: pointer;
+       background-color:white;
+       cursor: pointer;
+       transition: 0.2s;
+   }
+   .product_picture {
+       margin:2px;
+       object-fit:cover;
+       height: 120px;
+       width: 120px;
+       mix-blend-mode:multiply;
+       cursor: pointer;  
+   }
     *{
         margin: 0px;
         padding: 0px;
@@ -84,13 +217,14 @@
         text-align: center; /* Center the buttons */
     }
     button {
+        width: 200px;
         display: inline-block;
         margin: 20px 10px auto; 
         padding: 10px; 
         background-color: grey; 
         color: whitesmoke; 
         border: none;
-        border-radius: 5px; 
+        border-radius: 15px; 
         cursor: pointer;
         font-size: 15px;
     }

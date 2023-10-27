@@ -13,8 +13,7 @@
             <img class="big-image" src="">
         </div>
         <div class="content">
-            <div class="loader">
-            </div>
+            <div class="loader"></div>
             <div class="playground" id="playground" >
          </div>
          <div class="panel">
@@ -41,14 +40,19 @@
                </select>
             </form>
             </div> -->
+        <div class="button-container">
+            <button onclick="fetchdata('', true)">Recommended</button>
+            <button onclick="fetchdata('', false)">All</button>
+            <button>Product Lines</button>
+        </div>
         <div class="panel_header" id="panel_header">
-            <h3>Products</h3>
+            Products
         </div>
          <div class="product_panel" id="product_panel">
          </div>
 
          <div class="panel_header" id="panel_header">
-            <h3>Currently Selected</h3>
+            Currently Selected
         </div>
         <div class="product_panel" id="selected_product">
             <div class="products" id="products"></div>
@@ -74,8 +78,14 @@
         });
     });
    const productPanel = document.getElementById('product_panel');
-   function fetchdata(query) {
-      fetch('http://127.0.0.1:5000/api/products')
+   function fetchdata(query, status) {
+    if (status == true) {
+        var website = 'http://127.0.0.1:5000/api/products?recommended_products="true"'
+    } else {
+        var website = 'http://127.0.0.1:5000/api/products'
+    }
+    productPanel.innerHTML = '';
+      fetch(`${website}`)
          .then((response) => response.json())
          .then((data) => {
          for (const key in data) {
@@ -186,33 +196,53 @@
    const searchInput = document.getElementById("searchInput");
    const searchForm = document.getElementById("search-form");
    const submitButton = document.getElementById("submit-button")
-   fetchdata('');
+   fetchdata('', true);
    searchInput.addEventListener("keydown", function(event) {
       if (event.key === "Enter") {
          productPanel.innerHTML = ''
-         fetchdata(searchInput.value);
+         fetchdata(searchInput.value, false);
          event.preventDefault();
       }
    });
    submitButton.addEventListener("click", function(event) {
       productPanel.innerHTML = ''
-      fetchdata(searchInput.value);
+      fetchdata(searchInput.value, false);
       event.preventDefault();
    });
 
 </script>
 
 <style>
+    .button-container {
+        text-align: center; /* Center the buttons */
+    }
+    button {
+        width: 300px;
+        display: inline-block;
+        padding: 10px; 
+        background-color: #B86E65; 
+        color: whitesmoke; 
+        border: none;
+        border-radius: 10px; 
+        cursor: pointer;
+        font-size: 15px;
+        margin-bottom: 5px;
+    }
+    button:hover {
+        background-color: #be6054;
+    }
+    button:active {
+        background-color: #be6054;
+    }
     .panel_header {
         align-items: center;
         text-align: center;
-        background-image: url("https://www.lorealparisusa.com/-/media/project/loreal/brand-sites/oap/americas/us/beauty-magazine/2023/05-may/5-24/nude-pink-lipstick-options/nude-pink-lipstick.jpg");
-        background-repeat: no-repeat;
-        font-size: 10px;
-        color: red;
+        background-color: #B86E65;
+        font-size: 11px;
+        color: whitesmoke;
     }
 
-     .loader {
+    .loader {
         position: fixed;
         top: 0;
         left: 0;
@@ -222,7 +252,7 @@
         align-items: center;
         justify-content: center;
         background: #333333;
-        transition: opacity 5s, visibility 5s;
+        transition: opacity 1s, visibility 1s;
         }
 
     .loader--hidden {
@@ -238,16 +268,7 @@
         border-top-color: #B86E65;
         border-radius: 50%;
         animation: loading 1s ease infinite;
-        }
-
-    @keyframes loading {
-    from {
-        transform: rotate(0turn);
     }
-    to {
-        transform: rotate(1turn);
-    }
-        }
    .playground {
       display: flex;
    }
