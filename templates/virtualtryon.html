@@ -13,7 +13,6 @@
             <img class="big-image" src="">
         </div>
         <div class="content">
-            <div class="loader"></div>
             <div class="playground" id="playground" >
          </div>
          <div class="panel">
@@ -149,6 +148,7 @@
          }
       });
    };
+
    function fetchselected(query) {
     if (query == null) {
         var selected_product = document.getElementById('selected_product')
@@ -172,9 +172,8 @@
             selected_product.appendChild(products);
         });
     }
-
    }
-   function fetchmodified(query) {
+   async function fetchmodified(query) {
         if (query == null) {
             var playground = document.getElementById('playground');
             playground.innerHTML = '';
@@ -186,10 +185,21 @@
         else {
             var playground = document.getElementById('playground');
             playground.innerHTML = '';
-            var playground_image = document.createElement('img')
-            playground_image.src = `/static/playground/virtualtryon/modified/${query}.png?` + new Date().getTime()
-            playground_image.width = 300;
-            playground.appendChild(playground_image)
+            var spinner_container = document.createElement('div')
+            spinner_container.className = 'spinner_container'
+            var spinner = document.createElement('div')
+            spinner.className = 'spinner'
+            spinner_container.appendChild(spinner)
+            playground.appendChild(spinner_container)
+            const response = await fetch(`http://127.0.0.1:5000/api/products?selected_product=${query}`)
+            
+            if (response.status == 200) {
+                playground.innerHTML = '';
+                var playground_image = document.createElement('img')
+                playground_image.src = `/static/playground/virtualtryon/modified/${query}.png?` + new Date().getTime()
+                playground_image.width = 300;
+                playground.appendChild(playground_image)
+            }
         }
    }
    fetchmodified();
@@ -213,6 +223,27 @@
 </script>
 
 <style>
+.spinner_container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #B86E65;
+    width: 300px;
+    height: 300px;
+}
+.spinner {
+    border: 15px solid #dddddd;
+    border-top-color: #B86E65;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    animation: spin 0.5s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
     .button-container {
         text-align: center; /* Center the buttons */
     }
@@ -254,12 +285,10 @@
         background: #333333;
         transition: opacity 1s, visibility 1s;
         }
-
     .loader--hidden {
         opacity: 0;
         visibility: hidden;
     }
-
     .loader::after {
         content: "";
         width: 75px;
@@ -270,7 +299,8 @@
         animation: loading 1s ease infinite;
     }
    .playground {
-      display: flex;
+      padding: 5px;
+      background-color: #B86E65;
    }
    .search-options {
        display:flex;
@@ -396,7 +426,7 @@
        margin-left: 50px;
    }
    .content {
-      display: flex;
+    display: flex;
        justify-content: center;
        height: 90vh;
        background-position:50%;
