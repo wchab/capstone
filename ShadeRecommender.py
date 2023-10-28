@@ -6,6 +6,7 @@ import cv2
 import torch
 import segmentation_models_pytorch as smp
 from sklearn.cluster import KMeans
+from sklearn.metrics import silhouette_score
 
 class ShadeRecommender():
     def __init__(self, img_path):
@@ -13,7 +14,7 @@ class ShadeRecommender():
         self.segmodel = torch.load('./static/best_model.pth')
         self.output = self.predict_mask()
         self.binary_mask = self.store_binary_mask()
-        self.product_df = pd.read_excel('lipshades.xlsx')
+        self.product_df = pd.read_excel('./static/lipshades.xlsx')
 
         
     def predict_mask(self):
@@ -89,9 +90,7 @@ class ShadeRecommender():
     
     def recommend_products(self):
         '''
-        front-end to run this to obtain list of recommended product ids
-        first id would be the main product being recommended
-        the remaining ids are what the user might like 
+
         '''
         try:
             original_image = cv2.imread(self.img_path) 
@@ -113,11 +112,21 @@ class ShadeRecommender():
             avg_rgb = average_color[::-1]
             colour_lst.append(avg_rgb)
 
-            #top 3 dominant colours
+            #dominant colours
             segmented_pixels_rgb = list(map(lambda row: [row[2], row[1], row[0]], segmented_pixels))
-            kmeans = KMeans(n_clusters=3)
-            kmeans.fit(segmented_pixels_rgb)
+            
 
+            silhouette_scores = []
+            for n_clusters in range(2, 11):
+                kmeans = KMeans(n_clusters=n_clusters, n_init = 10, random_state=0)
+                kmeans_labels = kmeans.fit_predict(segmented_pixels_rgb)
+                silhouette_avg = silhouette_score(segmented_pixels_rgb, kmeans_labels)
+                silhouette_scores.append(silhouette_avg)
+
+            optimal_num_clusters = silhouette_scores.index(max(silhouette_scores)) + 2
+
+            kmeans = KMeans(n_clusters=optimal_num_clusters, random_state = 0)
+            kmeans.fit_predict(segmented_pixels_rgb)
             colour_lst.extend(kmeans.cluster_centers_)
             target_colors = colour_lst
             hex_lst = self.product_df['hexcode'].to_list()
@@ -131,7 +140,7 @@ class ShadeRecommender():
                 
                 return np.linalg.norm(color1 - color2)
             
-            recommended_product_ids = []
+            recommeded_product_ids = []
             for colour in target_colors:
                 dist_lst = []
                 for i in range(len(hex_lst)):
@@ -141,9 +150,9 @@ class ShadeRecommender():
                 
                 product_idx = dist_lst.index(min(dist_lst))
                 product_id = self.product_df.loc[product_idx, "product_id"]
-                if product_id not in recommended_product_ids:
-                    recommended_product_ids.append(product_id)
-            return recommended_product_ids          
+                if product_id not in recommeded_product_ids:
+                    recommeded_product_ids.append(product_id)
+            return recommeded_product_ids          
         
         except Exception as e:
             print(" Lips were not detected! Please upload another image! I will learn from this mistake!")
@@ -180,4 +189,3 @@ class ShadeRecommender():
         
         cv2.imwrite(mask_filepath, overlay_image)
         return mask_filepath
-
