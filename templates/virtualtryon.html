@@ -40,8 +40,8 @@
             </form>
             </div> -->
         <div class="button-container">
-            <button onclick="fetchdata('', true)">Recommended</button>
-            <button onclick="fetchdata('', false)">All</button>
+            <button onclick="fetchdata('', true)">Recommended For You</button>
+            <button onclick="fetchdata('', false)">All Products</button>
             <button>Product Lines</button>
         </div>
         <div class="panel_header" id="panel_header">
@@ -181,6 +181,17 @@
             playground_image.src = `/static/playground/virtualtryon/upload.png?` + new Date().getTime()
             playground_image.width = 300;
             playground.appendChild(playground_image)
+
+            var selected_container = document.createElement('div');
+            selected_container.className = 'selected_container'
+            var selected_container_desc = document.createElement('h3')
+            desc_label_content.className = 'description_label';
+            desc_label_content.textContent = `${item['color']}`;
+            desc_label.appendChild(desc_label_content);
+            desc.appendChild(desc_img);
+            desc.appendChild(desc_label);
+            products.appendChild(desc);
+            playground.appendChild(selected_container)
         }
         else {
             var playground = document.getElementById('playground');
@@ -191,6 +202,11 @@
             spinner.className = 'spinner'
             spinner_container.appendChild(spinner)
             playground.appendChild(spinner_container)
+
+            
+            var selected_container = document.createElement('div');
+            selected_container.className = 'selected_container'
+            playground.appendChild(selected_container)
             const response = await fetch(`http://127.0.0.1:5000/api/products?selected_product=${query}`)
             
             if (response.status == 200) {
@@ -223,6 +239,10 @@
 </script>
 
 <style>
+    .selected_container {
+        background-color: whitesmoke;
+        height:50px;
+    }
 .spinner_container {
     display: flex;
     justify-content: center;

@@ -19,6 +19,14 @@ def allowed_file(filename):
 def redirect_home():
     return redirect('/home')
 
+@app.route('/tutorial_virtualtryon', methods=['GET'])
+def tutorial_virtualtryon():
+    return render_template('tutorial_virtualtryon.html')
+
+@app.route('/tutorial_lipshadefinder', methods=['GET'])
+def tutorial_lipshadefinder():
+    return render_template('tutorial_lipshadefinder.html')
+
 @app.route('/api/products', methods=['GET'])
 def get_products():
     product_line_dict = {}
@@ -55,7 +63,6 @@ def get_products():
         hexcode = product_line_dict[selected_product]['hexcode']
         image = userhandler.lipcolorizer.colorize_lips(f'#{hexcode}')
         userhandler.lipcolorizer.saveImage(image, destination_filename)
-        time.sleep(2)
         return jsonify({selected_product: product_line_dict[selected_product]})
     else:
         return jsonify(product_line_dict)
@@ -80,7 +87,7 @@ def virtualtryon():
             userhandler.set_uploaded_virtualtryon_filename()
             return render_template('virtualtryon.html')
     else:
-        return render_template('virtualtryon.html')
+        return render_template('upload_virtualtryon.html')
 
 @app.route('/upload_virtualtryon', methods=['GET', 'POST'])
 def upload_virtualtryon():
