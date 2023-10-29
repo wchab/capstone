@@ -13,6 +13,7 @@
             <img class="big-image" src="">
         </div>
         <div class="content">
+            <div class="loader"></div>
             <div class="playground" id="playground" >
          </div>
          <div class="panel">
@@ -22,23 +23,6 @@
                      <div id="submit-button"><img src="./static/assets/search.png"></div>
                </form>
             </div>
-            <!-- <div class="search-options">
-            <form method="POST" id="operator">
-               <select name="selected_option" id="selected_option">
-                     <option disabled selected value> -- Select an Option -- </option>
-                     <option value="all">All Lipstick Product Lines</option>
-                     <option value="intense_volume_matte">Intense Volume Matte</option>
-               </select>
-            </form>
-            <form method="POST" id="operator">
-               <select name="selected_option" id="selected_option">
-                     <option disabled selected value> -- Select an Colour -- </option>
-                     <option value="all">All Lipstick Product Lines</option>
-                     <option value="intense_volume_matte">Intense Volume Matte</option>
-                     <option value="reds_of_worth">Reds of Worth</option>
-               </select>
-            </form>
-            </div> -->
         <div class="button-container">
             <button onclick="fetchdata('', true)">Recommended For You</button>
             <button onclick="fetchdata('', false)">All Products</button>
@@ -49,13 +33,6 @@
         </div>
          <div class="product_panel" id="product_panel">
          </div>
-
-         <div class="panel_header" id="panel_header">
-            Currently Selected
-        </div>
-        <div class="product_panel" id="selected_product">
-            <div class="products" id="products"></div>
-        </div>
 
 
          </div>
@@ -183,7 +160,7 @@
             playground.appendChild(playground_image)
 
             var selected_container = document.createElement('div');
-            selected_container.className = 'selected_container'
+            selected_container.className = 'selected_container';
             var selected_container_desc = document.createElement('h3')
             desc_label_content.className = 'description_label';
             desc_label_content.textContent = `${item['color']}`;
@@ -202,7 +179,6 @@
             spinner.className = 'spinner'
             spinner_container.appendChild(spinner)
             playground.appendChild(spinner_container)
-
             
             var selected_container = document.createElement('div');
             selected_container.className = 'selected_container'
