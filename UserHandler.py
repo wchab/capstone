@@ -2,6 +2,7 @@ import os
 import pandas as pd
 from ShadeRecommender import ShadeRecommender
 from LipColorizer import LipColorizer
+from FaceCounter import FaceCounter
 
 class UserHandler():
     def __init__(self):
@@ -13,6 +14,7 @@ class UserHandler():
         self.uploaded_virtualtryon_filename = None
         self.shaderecommender = None
         self.lipcolorizer = None
+        self.facecounter = None
         self.loreal_df = pd.read_excel('./static/lipshades.xlsx')
         print("========= Starting UserHandler =========")
 
@@ -37,3 +39,16 @@ class UserHandler():
         print(f"Initialised LipColorizer on {self.uploaded_virtualtryon_filename}")
         pass
     
+    def return_facecounter_filename(self):
+        return self.facecounter.filename
+    
+    def check_for_one_face(self, file_path):
+        self.facecounter = FaceCounter(file_path)
+        self.facecounter.save_labelled_faces_img()
+        if self.facecounter.num_faces_detected == 1:
+            return True
+        else:
+            return False
+        
+    
+        

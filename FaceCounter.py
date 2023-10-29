@@ -1,12 +1,17 @@
+import datetime as dt
 import cv2
 import os
 from retinaface import RetinaFace
 
 class FaceCounter():
     def __init__(self, img_path):
+        self.filename = os.path.basename(img_path)
         self.img_path  = img_path
         self.resp = self.detect_num_faces()
-        self.num_faces_detected = len(self.detect_num_faces()) #frontend to call this attribute to check how many faces detected in the image
+        if type(self.resp) == dict:
+            self.num_faces_detected = len(self.resp)
+        else:
+            self.num_faces_detected = 0 #frontend to call this attribute to check how many faces detected in the image
 
     def detect_num_faces(self):
         '''
@@ -20,27 +25,30 @@ class FaceCounter():
         saved labelled image into directory
         '''
         # Loop through the detected faces and draw bounding boxes
-        image = cv2.imread(self.img_path)
-        for face_name, face_data in self.resp.items():
-            x1, y1, x2, y2 = face_data['facial_area']
+        if type(self.resp) == dict:
+            image = cv2.imread(self.img_path)
+            for face_name, face_data in self.resp.items():
+                x1, y1, x2, y2 = face_data['facial_area']
 
-            # Draw the bounding box
-            cv2.rectangle(image, (x1, y1), (x2, y2), (0, 0, 255), 2)  # Green color
+                # Draw the bounding box
+                cv2.rectangle(image, (x1, y1), (x2, y2), (0, 255, 0), 2)  # Green color
 
-            # Add a label with the face name and score
-            label = f"{face_name}"
-            cv2.putText(image, label, (x1, y1 - 15), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+                # Add a label with the face name and score
+                label = f"{face_name}"
+                cv2.putText(image, label, (x1, y1 - 15), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
 
-        # Save the image with bounding boxes and labels
-        filename = os.path.basename(self.img_path)
-        
-        directory_path = "./static/face_counter_labelled_images"
+            # Save the image with bounding boxes and labels
+            filename = os.path.basename(self.img_path)
+            
+            directory_path = "./static/face_counter_labelled_images"
 
-        # Create the new filepath
-        labelled_img_path = os.path.join(directory_path, filename)
+            # Create the new filepath
+            labelled_img_path = os.path.join(directory_path, filename)
 
-        cv2.imwrite(labelled_img_path, image)        
+            cv2.imwrite(labelled_img_path, image)
 
-# test=FaceCounter("hehe.jpeg")
-# print(test.num_faces_detected)
-# test.save_labelled_faces_img()
+        else:
+            filename = os.path.basename(self.img_path)
+            directory_path = "./static/face_counter_labelled_images"
+            labelled_img_path = os.path.join(directory_path, filename)
+            cv2.imwrite(labelled_img_path, cv2.imread(self.img_path))        

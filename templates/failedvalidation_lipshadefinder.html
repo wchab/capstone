@@ -11,12 +11,11 @@
         </div>
         <div class="content">
             <div class="loader"></div>
-            <div class="container">
-                <h1 class="error-title" >Please check if the lips have been identified correctly.</h1>
-                <img src="{{ url_for('static', filename='playground/' + image_path)}}">
+            <div class="container" id="container">
+                <div class="error-info" id="error-info"></div>
                 <div class="button-container">
-                    <button class="yes-button" onclick="window.location.href = '/shadematched'">Yes (Continue Matching)</button>
-                    <button class="no-button" onclick="window.location.href = '/home'">No (Back To Home)</button>
+                    <button class="yes-button" onclick="window.location.href = '/upload_lipshadefinder'">Reupload Image</button>
+                    <button class="no-button" onclick="window.location.href = '/home'">Main Menu</button>
                 </div>
             </div>
         </div>
@@ -36,6 +35,30 @@
             document.body.removeChild(loader);
         });
     });
+    var container = document.getElementById("error-info")
+    fetch('http://127.0.0.1:5000/api/products?facecounter="true"')
+        .then((response) => response.json())
+        .then((data) => {
+            if (data['facecount'] > 1) {
+                var error_title1 = document.createElement('h1')
+                error_title1.className = 'error-title'
+                error_title1.innerHTML = 'More than one face is detected. Only one face is allowed in the photo'
+            } else if (data['facecount'] == 0) {
+                var error_title1 = document.createElement('h1')
+                error_title1.className = 'error-title'
+                error_title1.innerHTML = 'No face is detected. There must be one face in the photo'
+            }
+            var error_image = document.createElement('img')
+            error_image.className = "error_image"
+            error_image.src = `static/face_counter_labelled_images/${data['source']}?` + new Date().getTime()
+            container.appendChild(error_image)
+            container.appendChild(error_title1)
+            var error_title2 = document.createElement('h1')
+            error_title2.className = 'error-title'
+            error_title2.innerHTML = 'Please reupload another image.'
+            container.appendChild(error_title2)
+    });
+            
 </script>
 <style>
      .loader {
@@ -104,18 +127,19 @@
     .container img {
         width: 300px;
         height: 300px;
-        margin-top: 20px;
+        margin-bottom: 10px
     }
     .error-title {
         text-align: center;
         font-weight: bold;
         display: block;
         color: whitesmoke;
-        font-size:30px;
+        font-size:25px;
         margin-bottom: 20px;
     }
     .button-container {
         text-align: center; /* Center the buttons */
+        margin-top: -25px;
     }
     button {
         display: inline-block;

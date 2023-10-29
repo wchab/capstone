@@ -47,6 +47,14 @@ def get_products():
                                                     'hexcode': hexcode_dict[product_number],
                                                     'product_line': product_line_dict[product_number],
                                                     'wordsearch': search_dict[product_number]}
+                    
+    facecounter = request.args.get('facecounter')
+    if facecounter:
+        face_count_dict = {}
+        face_count_dict['facecount'] = userhandler.facecounter.num_faces_detected
+        face_count_dict['source'] = userhandler.return_facecounter_filename()
+        return jsonify(face_count_dict)
+    
     recommended_products = request.args.get('recommended_products')
     if recommended_products:
         recommended_line_dict = {}
@@ -70,7 +78,7 @@ def get_products():
 @app.route('/home')
 def home():
     return render_template('home.html')
-    
+
 @app.route('/virtualtryon', methods=['GET', 'POST'])
 def virtualtryon():
     if request.files:
@@ -84,8 +92,11 @@ def virtualtryon():
 
         if file and allowed_file(file.filename):
             file.save(userhandler.get_uploaded_virtualtryon_filename_path('upload.png'))
-            userhandler.set_uploaded_virtualtryon_filename()
-            return render_template('virtualtryon.html')
+            if userhandler.check_for_one_face(userhandler.get_uploaded_virtualtryon_filename_path('upload.png')):
+                userhandler.set_uploaded_virtualtryon_filename()
+                return render_template('virtualtryon.html')
+            else:
+                return render_template('failedvalidation_virtualtryon.html', image_path='upload.png')
     else:
         return render_template('upload_virtualtryon.html')
 
@@ -122,9 +133,13 @@ def lip_validation():
 
         if file and allowed_file(file.filename):
             file.save(userhandler.get_uploaded_lipshadefinder_filename_path(file.filename))
-            userhandler.set_uploaded_lipshadefinder_filename()
-            mask_directory = userhandler.shaderecommender.save_predicted_mask()
-            return render_template('lipvalidation.html', image_path=mask_directory)
+            if userhandler.check_for_one_face(userhandler.get_uploaded_lipshadefinder_filename_path(file.filename)):
+                userhandler.set_uploaded_lipshadefinder_filename()
+                mask_directory = userhandler.shaderecommender.save_predicted_mask()
+                return render_template('lipvalidation.html', image_path=mask_directory)
+            else:
+                return render_template('failedvalidation_lipshadefinder.html', image_path=file.filename)
+            
     else:
         return render_template('upload_lipshadefinder.html')
 

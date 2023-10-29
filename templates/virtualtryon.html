@@ -38,7 +38,7 @@
          </div>
         </div>
         <div class="bottom-banner">
-            <p>Bottom Banner Content Goes Here</p>
+            <p></p>
         </div>
     </body>
 </html>
@@ -162,12 +162,10 @@
             var selected_container = document.createElement('div');
             selected_container.className = 'selected_container';
             var selected_container_desc = document.createElement('h3')
-            desc_label_content.className = 'description_label';
-            desc_label_content.textContent = `${item['color']}`;
-            desc_label.appendChild(desc_label_content);
-            desc.appendChild(desc_img);
-            desc.appendChild(desc_label);
-            products.appendChild(desc);
+            selected_container_desc.className = 'description_label';
+            selected_container_desc.innerHTML = "None Selected"
+            selected_container_desc.style.fontSize = '13px'
+            selected_container.appendChild(selected_container_desc);
             playground.appendChild(selected_container)
         }
         else {
@@ -179,18 +177,80 @@
             spinner.className = 'spinner'
             spinner_container.appendChild(spinner)
             playground.appendChild(spinner_container)
-            
             var selected_container = document.createElement('div');
-            selected_container.className = 'selected_container'
+            selected_container.className = 'selected_container';
             playground.appendChild(selected_container)
-            const response = await fetch(`http://127.0.0.1:5000/api/products?selected_product=${query}`)
+            
+            var response = await fetch(`http://127.0.0.1:5000/api/products?selected_product=${query}`)
             
             if (response.status == 200) {
-                playground.innerHTML = '';
-                var playground_image = document.createElement('img')
-                playground_image.src = `/static/playground/virtualtryon/modified/${query}.png?` + new Date().getTime()
-                playground_image.width = 300;
-                playground.appendChild(playground_image)
+                fetch(`http://127.0.0.1:5000/api/products?selected_product=${query}`)
+                .then((resp) => resp.json())
+                .then((data) => {
+                    playground.innerHTML = '';
+                    var playground_image = document.createElement('img')
+                    playground_image.src = `/static/playground/virtualtryon/modified/${query}.png?` + new Date().getTime()
+                    playground_image.width = 300;
+                    playground.appendChild(playground_image)
+
+                    var selected_container = document.createElement('div');
+                    selected_container.className = 'selected_container';
+                    selected_container.innerHTML = "";
+                    var desc = document.createElement('div');
+                    desc.className = 'description';
+                    var desc_img = document.createElement('img');
+                    desc_img.className = 'selected_desc_img';
+                    desc_img.src = `static/images/colours/${query}.png`;
+                    var desc_label = document.createElement('div');
+                    desc_label.className = 'desc_label'
+                    var desc_label_content = document.createElement('h3');
+                    desc_label_content.className = 'selected_desc_content';
+                    desc_label_content.textContent = `${data[query]['color']}`;
+                    desc_label.appendChild(desc_label_content);
+                    var cancel_img = document.createElement('img')
+                    cancel_img.src =`static/assets/1.jpeg`
+                    cancel_img.className = "cancel"
+
+                    cancel_img.addEventListener("click", function() {
+                        var playground = document.getElementById('playground');
+                        playground.innerHTML = '';
+                        var spinner_container = document.createElement('div')
+                        spinner_container.className = 'spinner_container'
+                        var spinner = document.createElement('div')
+                        spinner.className = 'spinner'
+                        spinner_container.appendChild(spinner)
+                        playground.appendChild(spinner_container)
+                        var selected_container = document.createElement('div');
+                        selected_container.className = 'selected_container';
+                        playground.appendChild(selected_container)
+
+                        var playground = document.getElementById('playground');
+                        playground.innerHTML = '';
+                        var playground_image = document.createElement('img')
+                        playground_image.src = `/static/playground/virtualtryon/upload.png?` + new Date().getTime()
+                        playground_image.width = 300;
+                        playground.appendChild(playground_image)
+
+                        var selected_container = document.createElement('div');
+                        selected_container.className = 'selected_container';
+                        var selected_container_desc = document.createElement('h3')
+                        selected_container_desc.className = 'description_label';
+                        selected_container_desc.innerHTML = "None Selected"
+                        selected_container_desc.style.fontSize = '13px'
+                        selected_container.appendChild(selected_container_desc);
+                        playground.appendChild(selected_container)
+
+                        var components = document.getElementById('product_panel').querySelectorAll('.products');
+                        components.forEach(function(component) {
+                            component.style.backgroundColor = 'white';
+                        });
+                    })
+                    desc_label.appendChild(desc_img);
+                    desc_label.appendChild(desc_label_content);
+                    desc_label.appendChild(cancel_img);
+                    selected_container.appendChild(desc_label)
+                    playground.appendChild(selected_container)
+                })
             }
         }
    }
@@ -215,10 +275,37 @@
 </script>
 
 <style>
-    .selected_container {
-        background-color: whitesmoke;
-        height:50px;
+    .selected_desc_content {
+        margin-top: 23px;
+        font-size: 13px;
+        text-align: left;
+        margin-left: -20px;
+        width: 200px;
     }
+    .desc_label {
+        display: flex;
+    }
+    .selected_desc_img {
+        position:relative;
+        width: 40%;
+    }
+    .cancel {
+        position:relative;
+        width:20px;
+        height:20px;
+        margin-top: 22px;
+        margin-right: 15px;
+        cursor:pointer;
+    }
+.selected_container {
+    background-color: white;
+    height:50px;
+    width:300px;
+    display:flex;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+}
 .spinner_container {
     display: flex;
     justify-content: center;
@@ -373,7 +460,7 @@
    }
    .product_panel {
        width:1000px;
-       height: 250px;
+       height: 400px;
        overflow: auto;
        background-color:rgba(255,255,255,0.3);
    }
