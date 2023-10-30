@@ -42,11 +42,16 @@ capstone/
 │   ├── upload_lipshadefinder.html
 │   ├── upload_virtualtryon.html
 │   ├── virtualtryon.html
+│   ├── home.html
+│   ├── failedvalidation_lipshadefinder.html
+│   ├── failedvalidation_virtualtryon.html
 │   ├── archive
 │   │   ├── virtualtryon old.html
 │   static/
 │   ├── assets
 │   │   ├── search.png
+│   │   ├── cancel.png
+│   ├── face_counter_labelled_images
 │   ├── images
 │   │   ├── colours
 │   │   │   ├── AXXXXX.png
