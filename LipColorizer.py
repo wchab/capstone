@@ -30,7 +30,10 @@ class LipColorizer:
             return mask
 
     def colorize_lips(self, hexcode):
-        rgb = ImageColor.getcolor(hexcode, "RGB")
+        # rgb = ImageColor.getcolor(hexcode, "RGB")
+        def hex_to_rgb(hex_color):
+            return np.array([int(hex_color[i:i+2], 16) for i in (0, 2, 4)])
+        rgb = hex_to_rgb(hexcode)
         r, g, b= rgb[0], rgb[1], rgb[2]
         imgGray = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
         faces = self.detector(imgGray)
@@ -47,10 +50,10 @@ class LipColorizer:
             imgLips = self.create_box(self.image, myPoints[48:61], 3, masked=True, cropped=False)
 
             imgColorLips = np.zeros_like(imgLips)
-            imgColorLips[:] = b, g, r # 153, 0, 157
+            imgColorLips[:] = b, g, r 
             imgColorLips = cv2.bitwise_and(imgLips, imgColorLips)
             imgColorLips = cv2.GaussianBlur(imgColorLips, (7, 7), 10)
-            imgColorLips = cv2.addWeighted(self.imgOriginal, 1, imgColorLips, 0.4, 0)
+            imgColorLips = cv2.addWeighted(self.imgOriginal, 1, imgColorLips, 0.3, 0)
 
             return imgColorLips
         

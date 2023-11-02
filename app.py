@@ -69,7 +69,7 @@ def get_products():
     if selected_product:
         destination_filename = os.path.join("static", "playground", "virtualtryon", "modified", f"{selected_product}.png")
         hexcode = product_line_dict[selected_product]['hexcode']
-        image = userhandler.lipcolorizer.colorize_lips(f'#{hexcode}')
+        image = userhandler.lipcolorizer.colorize_lips(f'{hexcode}')
         userhandler.lipcolorizer.saveImage(image, destination_filename)
         return jsonify({selected_product: product_line_dict[selected_product]})
     else:
