@@ -1,3 +1,4 @@
+import CIEDE2000 as calc_delta
 import numpy as np
 import os
 import numpy as np
@@ -11,10 +12,10 @@ from sklearn.metrics import silhouette_score
 class ShadeRecommender():
     def __init__(self, img_path):
         self.img_path = img_path
-        self.segmodel = torch.load('./static/best_model.pth')
+        self.segmodel = torch.load('best_model.pth')
         self.output = self.predict_mask()
         self.binary_mask = self.store_binary_mask()
-        self.product_df = pd.read_excel('./static/lipshades.xlsx')
+        self.product_df = pd.read_excel('lipshades.xlsx')
 
         
     def predict_mask(self):
@@ -114,7 +115,7 @@ class ShadeRecommender():
 
             #dominant colours
             segmented_pixels_rgb = list(map(lambda row: [row[2], row[1], row[0]], segmented_pixels))
-            
+
 
             silhouette_scores = []
             for n_clusters in range(2, 11):
@@ -127,33 +128,104 @@ class ShadeRecommender():
 
             kmeans = KMeans(n_clusters=optimal_num_clusters, random_state = 0)
             kmeans.fit_predict(segmented_pixels_rgb)
+    #================================================VISUALISATIONS=======================================       
+            #             #score graph
+    #             # Create an array of cluster sizes (2 to 10 in your case)
+    #             cluster_sizes = range(2, 11)
+
+    #             # Plot the silhouette scores for different cluster sizes
+    #             plt.figure(figsize=(8, 6))
+    #             plt.plot(cluster_sizes, silhouette_scores, marker='o', linestyle='-')
+    #             plt.title('Silhouette Score vs. Number of Clusters')
+    #             plt.xlabel('Number of Clusters')
+    #             plt.ylabel('Average Silhouette Score')
+    #             plt.grid(True)
+    #             plt.show()
+    #             #score graph
+    #             #3d graph
+    #             fig = plt.figure(figsize = (15,15))            
+    #             ax = fig.add_subplot(111, projection='3d')
+
+
+    #             # Define unique colors for each cluster
+    #             colors = ['r', 'g', 'b', 'c', 'm', 'y', 'k']
+
+    #             # Plot each point with a color corresponding to its cluster assignment
+    #             scatter_plots = []
+    #             for i in range(len(segmented_pixels_rgb)):
+    #                 scatter = ax.scatter(segmented_pixels_rgb[i][0], segmented_pixels_rgb[i][1], segmented_pixels_rgb[i][2], c=colors[kmeans_labels[i]], marker='o')
+    #                 scatter_plots.append(scatter)
+
+    #             # Customize the plot
+    #             ax.set_xlabel('Red')
+    #             ax.set_ylabel('Green')
+    #             ax.set_zlabel('Blue')
+
+    #             # Create a legend
+    #             legend_elements = [Line2D([0], [0], marker='o', color='w', label=f'Cluster {i}', markerfacecolor=colors[i]) for i in range(optimal_num_clusters)]
+    #             ax.legend(handles=legend_elements, title='Clusters')
+
+    #             plt.show()
+
+    #             #3d graph
+    #================================================VISUALISATIONS=======================================  
             colour_lst.extend(kmeans.cluster_centers_)
             target_colors = colour_lst
             hex_lst = self.product_df['hexcode'].to_list()
-            
+
             # Function to convert hex to RGB
             def hex_to_rgb(hex_color):
                 return np.array([int(hex_color[i:i+2], 16) for i in (0, 2, 4)])
 
-            # Function to calculate Euclidean distance between two RGB colors
-            def colour_distance(color1, color2):
-                
-                return np.linalg.norm(color1 - color2)
+            # # Function to calculate Euclidean distance between two RGB colors
+            # def colour_distance(color1, color2):
+
+            #     return np.linalg.norm(color1 - color2)
+            
+            def rgb_to_lab(rgb_lst):
+                # Create a single-pixel image with the RGB color
+                rgb_array = np.array([rgb_lst], dtype=np.uint8)
+                image = rgb_array.reshape(1, 1, 3)
+
+                # Convert the single-pixel image to the Lab color space
+                lab_color = cv2.cvtColor(image, cv2.COLOR_RGB2Lab)
+
+                # Extract the L, a, and b components
+                L, a, b = cv2.split(lab_color)
+                return (L[0,0], a[0][0], b[0,0])
             
             recommeded_product_ids = []
+            #=============CIELAB method======================
             for colour in target_colors:
-                dist_lst = []
+                target_lab = rgb_to_lab(colour)
+                delta_lst = []
                 for i in range(len(hex_lst)):
                     rgb = hex_to_rgb(str(hex_lst[i]))
-                    dist = colour_distance(colour, rgb)
-                    dist_lst.append(dist)
-                
-                product_idx = dist_lst.index(min(dist_lst))
+                    lab = rgb_to_lab(rgb)
+                    delta = calc_delta.CIEDE2000(target_lab, lab)
+                    delta_lst.append(delta)
+
+                product_idx = delta_lst.index(min(delta_lst))
                 product_id = self.product_df.loc[product_idx, "product_id"]
                 if product_id not in recommeded_product_ids:
-                    recommeded_product_ids.append(product_id)
+                    recommeded_product_ids.append(product_id)                
+            #=============END CIELAB method======================
+
+            #=============euclidean distance method======================
+    #         for colour in target_colors:
+    #             dist_lst = []
+    #             for i in range(len(hex_lst)):
+    #                 rgb = hex_to_rgb(str(hex_lst[i]))
+    #                 dist = colour_distance(colour, rgb)
+    #                 dist_lst.append(dist)
+
+    #             product_idx = dist_lst.index(min(dist_lst))
+    #             product_id = self.product_df.loc[product_idx, "product_id"]
+    #             if product_id not in recommeded_product_ids:
+    #                 recommeded_product_ids.append(product_id)
+            #=============END euclidean distance method======================
             return recommeded_product_ids          
-        
+
         except Exception as e:
             print(" Lips were not detected! Please upload another image! I will learn from this mistake!")
     
