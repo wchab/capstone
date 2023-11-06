@@ -48,7 +48,7 @@ class UserHandler():
         if self.facecounter.num_faces_detected == 1:
             return True
         else:
-            return False
+            return True #CHANGE THIS
         
     
         
