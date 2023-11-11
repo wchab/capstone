@@ -16,14 +16,14 @@ from segmentation_models_pytorch import utils
 import optuna
 import matplotlib.pyplot as plt
 from torch import nn, optim
+import datetime as dt
 
 class FeedbackModel():
     def __init__(self, images_folder, json_folder):
         self.images_folder = images_folder
         self.json_folder = json_folder
 
-    def preprocessing(self):
-        print(self.images_folder)
+    def train(self):
         for filename in os.listdir(self.images_folder):
             if 'DS_Store' not in filename:
                 filename_title = filename.split('.')[0]
@@ -71,8 +71,8 @@ class FeedbackModel():
         transformation_list = [
             v2.RandomHorizontalFlip(p=1), 
             v2.RandomVerticalFlip(p=1), 
-            # v2.GaussianBlur(kernel_size=9),
-            # v2.RandomResizedCrop(size=(224, 224), scale=(0.5, 1.0), ratio=(0.75, 1.333), interpolation=2),
+            v2.GaussianBlur(kernel_size=9),
+            v2.RandomResizedCrop(size=(224, 224), scale=(0.5, 1.0), ratio=(0.75, 1.333), interpolation=2),
             # v2.Pad(padding=10),
             # v2.Pad(padding=20),
             # v2.Pad(padding=30),
@@ -174,6 +174,8 @@ class Retrain():
                 
                 self.data_len = len(self.data.index)
                 
+                self.new_model_name = None
+
             def __len__(self):
                 return self.data_len
 
@@ -202,8 +204,11 @@ class Retrain():
                 
                 return img.float(), masks
         device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-        # device
-        segmodel = torch.load('static/best_model.pth')
+ 
+        model_list = sorted(os.listdir('./static/models'), reverse=True)
+        model_path = os.path.join('static', 'models',model_list[0])
+
+        segmodel = torch.load(model_path)
         segmodel.to(device)
 
         #Split dataset into training and test sets
@@ -240,56 +245,23 @@ class Retrain():
             verbose=True
         )
 
-        def objective(trial):
-            max_score = 0
-            # Define hyperparameter search space
-            lr = trial.suggest_float("lr", 1e-5, 1e-2)
-            batch_size = trial.suggest_int("batch_size", 4, 64)
-            num_epochs = 10  # Increase the number of epochs
-
-            # Create and train the model with the suggested hyperparameters
-            # segmodel = YourModel()  # Define your model
-            optimizer = optim.Adam(segmodel.parameters(), lr=lr)
-            train_loader = torch.utils.data.DataLoader(train_data, batch_size=batch_size, shuffle=True)
-
-            for epoch in range(num_epochs):
-                print("In Function")
-                print("Epoch", epoch)
-                train_logs = train_epoch.run(train_loader)
-
-            # After training, evaluate the model on the validation set
-            valid_logs = valid_epoch.run(valid_loader)
-
-            if max_score < valid_logs['iou_score']:
-                max_score = valid_logs['iou_score']
-                print('hello')
-                torch.save(segmodel, './static/best_model.pth')
-
-            return valid_logs["iou_score"]
-
-        study = optuna.create_study(direction="maximize")
-        study.optimize(objective, n_trials=2)  # You can adjust the number of trials
-
-        # Get the best hyperparameters from the study
-        best_params = study.best_params
-
-        # Use the best hyperparameters to train the final model
-        best_lr = best_params["lr"]
-        best_batch_size = best_params["batch_size"]
-        num_epochs = 10  # Increase the number of epochs further
-
-        # Create and train the final model with the best hyperparameters
-        # segmodel = YourModel()  # Define your model
-        optimizer = optim.Adam(segmodel.parameters(), lr=best_lr)
-        train_loader = torch.utils.data.DataLoader(train_data, batch_size=best_batch_size, shuffle=True)
-
+        num_epochs = 10
         for epoch in range(num_epochs):
-            print("Out of function")
             print("Epoch", epoch)
-        train_logs = train_epoch.run(train_loader)
+            train_logs = train_epoch.run(train_loader)
 
-        # Evaluate the final model on the test set
-        test_logs = valid_epoch.run(valid_loader)
-        print(f"Test IoU Score: {test_logs['iou_score']}")
-            
-FeedbackModel('static/wrong-images', 'static/wrong-images-json').preprocessing()
+        # After training, evaluate the model on the validation set
+        valid_logs = valid_epoch.run(valid_loader)
+
+        self.new_model_name = f'{dt.datetime.now()}_model.pth'
+
+        torch.save(segmodel, f'./static/models/{self.new_model_name}')
+        print(valid_logs["iou_score"])
+
+        model_feedback_df = pd.read_excel('./static/logs.xlsx', sheet_name='model_feedback')
+        model_feedback_df.loc[len(model_feedback_df) + 1] = [dt.datetime.now(), self.new_model_name, valid_logs['iou_score']]
+        with pd.ExcelWriter('./static/logs.xlsx', engine='openpyxl', mode='a', if_sheet_exists='replace') as writer:
+            model_feedback_df.to_excel(writer, sheet_name='model_feedback', index=False)
+        
+        print(model_feedback_df.head())
+        

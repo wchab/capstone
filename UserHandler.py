@@ -27,8 +27,6 @@ class UserHandler():
         print(f"Initialised ShadeRecommender on {self.uploaded_lipshadefinder_filename}")
         pass
     
-
-
     #=========== Virtual Try On ===========
     def get_uploaded_virtualtryon_filename_path(self, filename):
         self.uploaded_virtualtryon_filename = filename
@@ -48,7 +46,7 @@ class UserHandler():
         if self.facecounter.num_faces_detected == 1:
             return True
         else:
-            return True #CHANGE THIS
+            return False
         
     
         

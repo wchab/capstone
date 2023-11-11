@@ -4,6 +4,7 @@ import pandas as pd
 from flask import Flask, render_template, request, redirect, url_for, jsonify, send_file
 from flask_executor import Executor
 from UserHandler import UserHandler
+from Feedback import FeedbackModel
 
 app = Flask(__name__, static_url_path='/static')
 executor = Executor(app)
@@ -142,6 +143,11 @@ def lip_validation():
             
     else:
         return render_template('upload_lipshadefinder.html')
+
+@app.route('/training', methods=['GET', 'POST'])
+def training():
+    FeedbackModel('static/wrong-images', 'static/wrong-images-json').train()
+    return redirect('/home')
 
 if __name__ == '__main__':
     app.run(debug=True)

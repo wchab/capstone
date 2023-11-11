@@ -11,7 +11,9 @@ from sklearn.metrics import silhouette_score
 class ShadeRecommender():
     def __init__(self, img_path):
         self.img_path = img_path
-        self.segmodel = torch.load('./static/best_model.pth')
+        model_list = sorted(os.listdir('./static/models'), reverse=True)
+        model_path = os.path.join('static', 'models',model_list[0])
+        self.segmodel = torch.load(model_path)
         self.output = self.predict_mask()
         self.binary_mask = self.store_binary_mask()
         self.product_df = pd.read_excel('./static/lipshades.xlsx')
