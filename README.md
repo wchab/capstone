@@ -27,24 +27,23 @@ BT4103 Business Analytics Capstone Project on Lipstick Shade Recommendation and 
 
 ### A typical top-level directory layout
 
-    .
-    ├── build                   # Compiled files (alternatively `dist`)
-    ├── docs                    # Documentation files (alternatively `doc`)
-    ├── src                     # Source files (alternatively `lib` or `app`)
-    ├── test                    # Automated tests (alternatively `spec` or `tests`)
-    ├── tools                   # Tools and utilities
-    ├── LICENSE
-    └── README.md
-
+    capstone/
+    ├── FaceCounter.py                   
+    ├── LipColorizer.py                    
+    ├── ShadeRecommender.py                  
+    ├── Feedback.py
+    ├── app.py
+    └── templates/
+          ├── LipColorizer.py     
 
 capstone/
 ├── FaceCounter.py
 ├── LipColorizer.py        
-├── ShadeRecommender.py
-├── Feedback.py
-├── app.py
+├── 
+├──
+├── 
 ├── LipColorizer.py   
-│   templates/
+│   
 │   ├── home.html
 │   ├── lipvalidation.html  
 │   ├── shadematched.html            
