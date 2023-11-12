@@ -1,8 +1,7 @@
 # lip-shade-finder
 
 ## Project Description
-BT4103 Business Analytics Capstone Project on Lipstick Shade Recommendation and Lipstick Shade Try-On, leveraging computer
-vision and machine-learning.
+BT4103 Business Analytics Capstone Project on Lipstick Shade Recommendation and Lipstick Shade Try-On, leveraging computer vision and machine-learning.
 
 ## Dataset Used
 -  Lip Segmentation 28K Samples (https://www.kaggle.com/datasets/olekslu/makeup-lips-segmentation-28k-samples/data)
@@ -28,28 +27,34 @@ vision and machine-learning.
 
 ## Folder Structure
 capstone/
-│   ├── FaceCounter.py
-│   ├── LipColorizer.py
-│   ├── ShadeRecommender.py
-│   ├── UserHandler.py
-│   ├── app.py
+├── FaceCounter.py
+├── LipColorizer.py        
+├── ShadeRecommender.py
+├── Feedback.py
+├── app.py
+├── LipColorizer.py   
 │   templates/
 │   ├── home.html
-│   ├── lipvalidation.html
-│   ├── shadematched.html
-│   ├── tutorial_lipshadefinder.html
+│   ├── lipvalidation.html  
+│   ├── shadematched.html            
 │   ├── tutorial_virtualtryon.html
-│   ├── upload_lipshadefinder.html
-│   ├── upload_virtualtryon.html
+│   ├── upload_lipshadefinder.html 
+│   ├── upload_virtualtryon.html  
 │   ├── virtualtryon.html
-│   ├── home.html
-│   ├── failedvalidation_lipshadefinder.html
+│   ├── upload_virtualtryon.html  
+│   ├── virtualtryon.html
 │   ├── failedvalidation_virtualtryon.html
-│   ├── archive
-│   │   ├── virtualtryon old.html
+│   ├── failedvalidation_lipshadefinder.html
+│   archive/
+│   ├── virtualtryon old.html
 │   static/
 │   ├── assets
-│   │   ├── search.png
+│   │    ├── search.png
+│   │    ├── cancel.png
+
+│   static/
+│   ├── assets
+│   │   ├── 
 │   │   ├── cancel.png
 │   ├── face_counter_labelled_images
 │   ├── images
@@ -79,8 +84,10 @@ capstone/
 │   │   ├── lipshadetutorial.jpg
 │   │   ├── virtualtryontutorial.jpg
 │   ├── user_generated_masks
-│   ├── best_model.pth
+│   ├── models
+│   │   ├── 2023-11-09_model.pth
 │   ├── lipshades.xlsx
+│   ├── logs.xlsx
 │   ├── shade_predictor_68_face_landmarks.dat
 
 
@@ -135,3 +142,6 @@ selected_product | string | Product ID | 'A00001'
   }
 }
 
+## Running of Flask on Localhost for Lip Shade Finder / Virtual Try-On
+- Ensure packages are installed
+- Run app.py

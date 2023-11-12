@@ -17,7 +17,7 @@ class ShadeRecommender():
         self.segmodel = torch.load(model_path)
         self.output = self.predict_mask()
         self.binary_mask = self.store_binary_mask()
-        self.product_df = pd.read_excel('lipshades.xlsx')
+        self.product_df = pd.read_excel('./static/lipshades.xlsx')
 
     def predict_mask(self):
         '''
@@ -225,9 +225,10 @@ class ShadeRecommender():
     #             if product_id not in recommeded_product_ids:
     #                 recommeded_product_ids.append(product_id)
             #=============END euclidean distance method======================
-            return recommeded_product_ids          
+            return recommeded_product_ids        
 
         except Exception as e:
+            print(self.img_path)
             print(" Lips were not detected! Please upload another image! I will learn from this mistake!")
     
     def save_predicted_mask(self):
