@@ -33,73 +33,59 @@ BT4103 Business Analytics Capstone Project on Lipstick Shade Recommendation and 
     ├── ShadeRecommender.py                  
     ├── Feedback.py
     ├── app.py
-    └── templates/
-          ├── LipColorizer.py     
-
-capstone/
-├── FaceCounter.py
-├── LipColorizer.py        
-├── 
-├──
-├── 
-├── LipColorizer.py   
-│   
-│   ├── home.html
-│   ├── lipvalidation.html  
-│   ├── shadematched.html            
-│   ├── tutorial_virtualtryon.html
-│   ├── upload_lipshadefinder.html 
-│   ├── upload_virtualtryon.html  
-│   ├── virtualtryon.html
-│   ├── upload_virtualtryon.html  
-│   ├── virtualtryon.html
-│   ├── failedvalidation_virtualtryon.html
-│   ├── failedvalidation_lipshadefinder.html
-│   archive/
-│   ├── virtualtryon old.html
-│   static/
-│   ├── assets
-│   │    ├── search.png
-│   │    ├── cancel.png
-
-│   static/
-│   ├── assets
-│   │   ├── 
-│   │   ├── cancel.png
-│   ├── face_counter_labelled_images
-│   ├── images
-│   │   ├── colours
-│   │   │   ├── AXXXXX.png
-│   │   ├── color_sensational_bricks
-│   │   │   ├── AXXXXX.png
-│   │   ├── color_sensational_ultimattes
-│   │   │   ├── AXXXXX.png
-│   │   ├── intense_volume_matte
-│   │   │   ├── AXXXXX.png
-│   │   ├── reds_of_worth
-│   │   │   ├── AXXXXX.png
-│   │   ├── sens_liq_cush
-│   │   │   ├── AXXXXX.png
-│   │   ├── superstay_ink_crayon
-│   │   │   ├── AXXXXX.png
-│   │   ├── superstay_matte_ink
-│   │   │   ├── AXXXXX.png
-│   │   ├── superstay_vinyl_ink
-│   │   │   ├── AXXXXX.png
-│   ├── playground
-│   │   ├── lipshadefinder
-│   │   ├── virtualtryon
-│   │   │   ├── modified
-│   ├── tutorial
-│   │   ├── lipshadetutorial.jpg
-│   │   ├── virtualtryontutorial.jpg
-│   ├── user_generated_masks
-│   ├── models
-│   │   ├── 2023-11-09_model.pth
-│   ├── lipshades.xlsx
-│   ├── logs.xlsx
-│   ├── shade_predictor_68_face_landmarks.dat
-
+    ├── templates/
+          ├── home.html
+          ├── lipvalidation.html  
+          ├── shadematched.html    
+          ├── tutorial_virtualtryon.html   
+          ├── tutorial_lipshadefinder.html   
+          ├── upload_lipshadefinder.html 
+          ├── upload_virtualtryon.html  
+          ├── virtualtryon.html
+          ├── failedvalidation_virtualtryon.html 
+          ├── failedvalidation_lipshadefinder.html
+    ├── static/
+          ├── assets/
+                ├── search.png
+                ├── cancel.png
+          ├── face_counter_labelled_images/
+          ├── images/
+                ├── colours/
+                      └── AXXXXX.png
+                ├── color_sensational_bricks/
+                      └── AXXXXX.png
+                ├── color_sensational_ultimattes/
+                      └── AXXXXX.png
+                ├── intense_volume_matte/
+                      └── AXXXXX.png
+                ├── reds_of_worth/
+                      └── AXXXXX.png
+                ├── sens_liq_cush/
+                      └── AXXXXX.png
+                ├── superstay_ink_crayon/
+                      └── AXXXXX.png
+                ├── superstay_matte_ink/
+                      └── AXXXXX.png
+                ├── superstay_vinyl_ink/
+                      └── AXXXXX.png
+          ├── playground/
+                  ├── lipshadefinder/
+                  └── virtualtryon/
+                          └── modified/
+          ├── tutorial/
+                  ├── lipshadetutorial.jpg
+                  ├── virtualtryontutorial.jpg                                     
+          ├── augmented-images/
+          ├── augmented-masks/
+          ├── user-generated-mask/
+          ├── wrong-generated-mask/
+          ├── wrong-images/
+          ├── wrong-images-json/
+          ├── models
+                ├── 2023-11-09_model.pth
+          ├── lipshades.xlsx
+          ├── logs.xlsx
+          ├── shade_predictor_68_face_landmarks.dat
 
 ## Directory
 [capstone/] - Contains scripts for lipshade recommendation, lip detection, face detection and flask deployment and API creation
