@@ -25,15 +25,16 @@ BT4103 Business Analytics Capstone Project on Lipstick Shade Recommendation and 
 - Upon clicking on any L'Oreal lipstick on the side panel of the website, the user uploaded image will be processed by our trained model in LipColorizer.
 - `Output: Applied lipstick shade on uploaded image based on lipstick shade selected`
 
-## Folder Structure
-.
-├── build                   # Compiled files (alternatively `dist`)
-├── docs                    # Documentation files (alternatively `doc`)
-├── src                     # Source files (alternatively `lib` or `app`)
-├── test                    # Automated tests (alternatively `spec` or `tests`)
-├── tools                   # Tools and utilities
-├── LICENSE
-└── README.md
+### A typical top-level directory layout
+
+    .
+    ├── build                   # Compiled files (alternatively `dist`)
+    ├── docs                    # Documentation files (alternatively `doc`)
+    ├── src                     # Source files (alternatively `lib` or `app`)
+    ├── test                    # Automated tests (alternatively `spec` or `tests`)
+    ├── tools                   # Tools and utilities
+    ├── LICENSE
+    └── README.md
 
 
 capstone/
