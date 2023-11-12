@@ -26,6 +26,16 @@ BT4103 Business Analytics Capstone Project on Lipstick Shade Recommendation and 
 - `Output: Applied lipstick shade on uploaded image based on lipstick shade selected`
 
 ## Folder Structure
+.
+├── build                   # Compiled files (alternatively `dist`)
+├── docs                    # Documentation files (alternatively `doc`)
+├── src                     # Source files (alternatively `lib` or `app`)
+├── test                    # Automated tests (alternatively `spec` or `tests`)
+├── tools                   # Tools and utilities
+├── LICENSE
+└── README.md
+
+
 capstone/
 ├── FaceCounter.py
 ├── LipColorizer.py        
